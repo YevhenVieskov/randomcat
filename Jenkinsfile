@@ -116,7 +116,7 @@ def pushImage(){
 }
 
 def buildApp() {
-	dir ('mnist-flask-app' ) {
+	dir ('randomcat' ) {
 		//def appImage = docker.build("mydocker.repo.servername/myapp:${BUILD_NUMBER}")
 		def appImage = docker.build("randomcat:${BUILD_NUMBER}")
 	}

@@ -108,8 +108,8 @@ pipeline {
 def pushImage(){
     withCredentials([usernamePassword(credentialsId: 'docker-login-password-authentification', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASSWORD')]) 
                 {
-				 //https://mydocker.repo.servername	
-                 sh "docker login --username ${DOCKER_USER} --password ${DOCKER_PASSWORD}  https://hub.docker.com/repository/docker/vieskov1980/randomcat "
+				 //https://mydocker.repo.servername	 https://hub.docker.com/repository/docker/vieskov1980/randomcat
+                 sh "docker login --username ${DOCKER_USER} --password ${DOCKER_PASSWORD}"
                  sh "docker push vieskov1980/randomcat:${BUILD_ID}"
 				 
                 }

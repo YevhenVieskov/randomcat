@@ -160,11 +160,11 @@ def approve() {
 
 
 def runUnittests() {
-	sh "pip3 install --no-cache-dir -r ./randomcat/requirements.txt"
-	sh "python3 randomcat/tests/test_flask_app.py"
+	sh "pip3 install --no-cache-dir -r ./requirements.txt"
+	sh "python3 ./tests/test_flask_app.py"
 }
 
 
 def runUAT(port) {
-	sh "mnist-flask-app/tests/runUAT.sh ${port}"
+	sh "./tests/runUAT.sh ${port}"
 }

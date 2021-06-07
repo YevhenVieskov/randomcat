@@ -35,9 +35,9 @@ pipeline {
 		}
         
 		//Uploading the  image to the remote Docker repository 
-		stage("Push to Docker-repo") {
+		/*stage("Push to Docker-repo") {
             steps { pushImage() }
-                }
+                }*/
 
         //Deploying the application from the Docker image on the Dev server 
 		stage("Deploy - Dev") {

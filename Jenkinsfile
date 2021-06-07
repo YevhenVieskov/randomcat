@@ -3,7 +3,7 @@
 //variables
 def DOCKER_USER = "vieskov1980"
 def DOCKER_PASSWORD = "xkdPzjUzzXZtgz9"
-def WORKSPACE = "/var/lib/python"                            //"/var/lib/jenkins/jobs/randomcat"
+def WORKSPACE = "/usr/lib/python"                            //"/var/lib/jenkins/jobs/randomcat"
 
 pipeline {
     agent any

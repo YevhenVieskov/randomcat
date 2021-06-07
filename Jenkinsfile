@@ -120,7 +120,7 @@ def buildApp() {
 		//def appImage = docker.build("mydocker.repo.servername/myapp:${BUILD_NUMBER}")
 	//	def appImage = docker.build("randomcat:${BUILD_NUMBER}")
 	//}
-	docker build -t "randomcat:${BUILD_NUMBER}" .
+	sh"docker build -t randomcat:${BUILD_NUMBER} ."
 }
 
 

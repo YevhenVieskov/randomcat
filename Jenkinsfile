@@ -25,9 +25,9 @@ pipeline {
             }
 	    } 
 		
-		stage("Test - Unit tests") {
+		/*stage("Test - Unit tests") {
 			steps { runUnittests() }
-		}
+		}*/
 
         //Building a Docker image with an application
         stage("Build") {

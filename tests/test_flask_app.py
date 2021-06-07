@@ -3,6 +3,7 @@
 import sys
 import os
 import unittest
+sys.path.append(r"../")
 import app
 
 class BasicTests(unittest.TestCase):

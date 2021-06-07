@@ -3,7 +3,7 @@
 import sys
 import os
 import unittest
-sys.path.append(r"../")
+sys.path.append(r"randomcat")
 import app
 
 class BasicTests(unittest.TestCase):

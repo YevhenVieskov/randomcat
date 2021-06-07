@@ -13,7 +13,7 @@ pipeline {
     }
 
 	environment {
-		PYTHONPATH = "${WORKSPACE}" // /var/lib/python "${WORKSPACE}"
+		PYTHONPATH = "${WORKSPACE}" // /var/lib/python "${WORKSPACE}" "${GIT_COMMIT}"
 	}
 
     stages {

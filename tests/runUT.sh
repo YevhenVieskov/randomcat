@@ -1,10 +1,14 @@
 #!/bin/bash
 PATH=$WORKSPACE/venv/bin:$HOME/.local/bin:$PATH
 if [ ! -d "venv" ] then;
-	pip3 install virtualenv --user
-	virtualenv venv
+	#pip3 install virtualenv --user
+	#virtualenv venv
+	pip3 install --user virtualenv
+    python3 -m venv testenv	
 fi
-source venv/bin/activate
+source testenv/bin/activate
 pip3 install --no-cache-dir -r ./requirements.txt
-python3  ./test_flask_app.py"
+python3  ./test_flask_app.py
+#deactivate
+#exit
 

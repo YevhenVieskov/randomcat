@@ -164,17 +164,17 @@ def approve() {
 
 def runUnittests() {
 	
-    sh"export WORKSPACE=`pwd`"
+    //sh"export WORKSPACE=`pwd`"
 	//python3 -m pip install --user virtualenv
 	sh "pip3 install --user virtualenv"
     //sh"virtualenv testenv -p /usr/bin/python3"
-    sh"python3 -m venv testenv"  //!
-    sh"source testenv/bin/activate" //!
+    //sh"python3 -m venv testenv"  //!
+    //sh"source testenv/bin/activate" //!
 	sh "pip3 install --no-cache-dir -r ./requirements.txt"	
 	sh "cd /var/lib/jenkins/workspace/randomcat/"
 	sh "python3  ./test_flask_app.py"
-	sh "deactivate"
-	sh "exit"
+	//sh "deactivate"
+	//sh "exit"
 	
 	
 }

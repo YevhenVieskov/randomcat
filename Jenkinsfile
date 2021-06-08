@@ -175,6 +175,8 @@ def runUnittests() {
 	//sh "python3  ./test_flask_app.py"
 	//sh "deactivate"
 	//sh "exit"
+	sh "chmod +x -R ${env.WORKSPACE}"
+	sh "./tests/runUT.sh ${port}"
 	sh"PATH=$WORKSPACE/venv/bin:$HOME/.local/bin:$PATH"
 	sh "if [ ! -d "venv" ] then;"
 	sh "pip install virtualenv --user"

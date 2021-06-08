@@ -164,7 +164,7 @@ def approve() {
 
 def runUnittests() {
 	
-    //sh"export WORKSPACE=`pwd`"
+    sh"export WORKSPACE=`pwd`"
 	//python3 -m pip install --user virtualenv
 	sh "pip3 install --user virtualenv"
     //sh"virtualenv testenv -p /usr/bin/python3"

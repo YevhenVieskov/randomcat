@@ -165,6 +165,8 @@ def approve() {
 def runUnittests() {
 	
     sh"export WORKSPACE=`pwd`"
+	//python3 -m pip install --user virtualenv
+	sh "pip3 install --user virtualenv"
     sh"virtualenv testenv -p /usr/bin/python3"
     sh"source testenv/bin/activate"
 	sh "pip3 install --no-cache-dir -r ./requirements.txt"	

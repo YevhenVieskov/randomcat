@@ -174,5 +174,6 @@ def runUnittests() {
 
 
 def runUAT(port) {
+	sh "usermod -aG runUAT.sh jenkins"
 	sh "./tests/runUAT.sh ${port}"
 }

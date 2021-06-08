@@ -164,9 +164,9 @@ def approve() {
 
 def runUnittests() {
 	
-    sh"export WORKSPACE=`pwd`"
-    sh"virtualenv testenv -p /usr/bin/python3"
-    sh"source testenv/bin/activate"
+    //sh"export WORKSPACE=`pwd`"
+    //sh"virtualenv testenv -p /usr/bin/python3"
+    //sh"source testenv/bin/activate"
 	sh "pip3 install --no-cache-dir -r ./requirements.txt"	
 	sh "python3  ./tests/test_flask_app.py"
 	
@@ -174,6 +174,6 @@ def runUnittests() {
 
 
 def runUAT(port) {
-	
+	sh "chmod +x -R ${env.WORKSPACE}"
 	sh "./tests/runUAT.sh ${port}"
 }

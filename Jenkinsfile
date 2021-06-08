@@ -175,12 +175,12 @@ def runUnittests() {
 	//sh "python3  ./test_flask_app.py"
 	//sh "deactivate"
 	//sh "exit"
-	sh'''PATH=$WORKSPACE/venv/bin:$HOME/.local/bin:$PATH
-	if [ ! -d "venv" ] then;
-		pip install virtualenv --user
-		virtualenv venv
-	fi'''
-	. venv/bin/activate
+	sh"PATH=$WORKSPACE/venv/bin:$HOME/.local/bin:$PATH"
+	sh "if [ ! -d "venv" ] then;"
+	sh "pip install virtualenv --user"
+	sh "virtualenv venv"
+	sh "fi"
+	sh ". venv/bin/activate"
 	sh "pip3 install --no-cache-dir -r ./requirements.txt"
 	sh "python3  ./test_flask_app.py"
 

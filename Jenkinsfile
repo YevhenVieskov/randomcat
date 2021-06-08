@@ -175,7 +175,7 @@ def runUnittests() {
 	//sh "python3  ./test_flask_app.py"
 	//sh "deactivate"
 	//sh "exit"
-	bash '''PATH=$WORKSPACE/venv/bin:$HOME/.local/bin:$PATH
+	sh'''PATH=$WORKSPACE/venv/bin:$HOME/.local/bin:$PATH
 	if [ ! -d "venv" ] then;
 		pip install virtualenv --user
 		virtualenv venv

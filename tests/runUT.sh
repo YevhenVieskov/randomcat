@@ -7,6 +7,6 @@ fi
 
 source testenv/bin/activate
 pip3 install --no-cache-dir -r ./requirements.txt
-python3  ./test_flask_app.py
+python3  ./tests/test_flask_app.py
 deactivate
 exit

@@ -30,7 +30,7 @@ pipeline {
 			stages{
 				stage("Build test image"){
 					steps{
-						sh "pip install --user --no-cache-dir -r requirements.txt "
+						sh "python -m pip install --user --no-cache-dir -r requirements.txt "
 					}
 				}
 

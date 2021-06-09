@@ -5,7 +5,7 @@ import os
 import unittest
 #sys.path.append(r"randomcat")
 # jenkins exposes the workspace directory through env.
-sys.path.append(os.environ['WORKSPACE'])
+#sys.path.append(os.environ['WORKSPACE'])
 import app
 
 class BasicTests(unittest.TestCase):

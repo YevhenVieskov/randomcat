@@ -35,18 +35,18 @@ pipeline {
 						}
 					}
 
-					post {
+					/*post {
                         cleanup {
                             cleanWs()
                         }
-                    }
+                    }*/
 				}
 
 				stage("Test") {
 					steps{
-						//withEnv(["HOME=${env.WORKSPACE}"]) {
+						withEnv(["HOME=${env.WORKSPACE}"]) {
 						    sh "python test_flask_app.py"
-						//}
+						}
 					}
 
 					post {

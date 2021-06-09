@@ -133,7 +133,7 @@ pipeline {
 
 		stage ("Copy image to remote server") {
 			steps {
-			    sh "scp -r ~/app.tar ubuntu@52.14.77.84 ~/"
+			    sh "scp -r ~/app.tar ubuntu@52.14.77.84 /home/ubuntu"
 			}
 		}
 

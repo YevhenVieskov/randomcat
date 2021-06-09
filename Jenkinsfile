@@ -30,7 +30,9 @@ pipeline {
 			stages{
 				stage("Build test image"){
 					steps{
-						sh "python -m pip install --user --no-cache-dir -r requirements.txt "
+						withEnv(["HOME=${env.WORKSPACE}"]) {
+						    sh "python -m pip install --user --no-cache-dir -r requirements.txt "
+						}
 					}
 				}
 

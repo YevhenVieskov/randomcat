@@ -126,11 +126,15 @@ pipeline {
 		//on the Prod server (similar to how it was done in step stage("Deploy - Dev")) 
        
 	    stage ("Save image") {
-			sh "docker image save -o ~/app.tar randomcat:${BUILD_NUMBER}"
+			steps {
+			    sh "docker image save -o ~/app.tar randomcat:${BUILD_NUMBER}"
+			}
 		}
 
 		stage ("Copy image to remote server") {
-			sh "scp -r ~/app.tar ubuntu@52.14.77.84 ~/"
+			steps {
+			    sh "scp -r ~/app.tar ubuntu@52.14.77.84 ~/"
+			}
 		}
 
         stage("Deploy - prod") {

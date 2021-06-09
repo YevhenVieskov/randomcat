@@ -1,5 +1,10 @@
 #!/usr/bin/groovy
 
+//variables
+def DOCKER_USER = "vieskov"
+def DOCKER_PASSWORD = "xxxx"
+def WORKSPACE = "/usr/lib/python"                            //"/var/lib/jenkins/jobs/randomcat"
+
 pipeline {
     agent any
 
@@ -8,7 +13,7 @@ pipeline {
     }
 
 	environment {
-		PYTHONPATH = "${WORKSPACE}/mnist-flask-app"
+		PYTHONPATH = "${WORKSPACE}" // /var/lib/python "${WORKSPACE}" "${GIT_COMMIT}"
 	}
 
     stages {
@@ -16,12 +21,48 @@ pipeline {
 		//Download code from the repository
 		stage("Checkout") {			 
             steps {
-                git credentialsId: 'jenkins-user-ssh-key', url: 'git@bitbucket.org:mybitbucketuser/cats.git', branch: 'master' 
+                git credentialsId: 'github-ssh-key-micro', url: 'https://github.com/YevhenVieskov/randomcat.git', branch: 'main' 
             }
 	    } 
 		
 		stage("Test - Unit tests") {
-			steps { runUnittests() }
+			agent { docker { image 'python:3.5-alpine' } }
+			stages{
+				stage("Build test image"){
+					steps{
+						withEnv(["HOME=${env.WORKSPACE}"]) {
+						    sh "python -m pip install --user --no-cache-dir -r requirements.txt "
+						}
+					}
+
+					/*post {
+                        cleanup {
+                            cleanWs()
+                        }
+                    }*/
+				}
+
+				stage("Test") {
+					steps{
+						withEnv(["HOME=${env.WORKSPACE}"]) {
+						    sh "python test_flask_app.py"
+						}
+					}
+
+					post {
+						always {
+							//sh 'ln -s tests/test-results-unit.xml $WORKSPACE'
+							//junit "**/test-reports/*.xml"
+							junit(
+                                allowEmptyResults: true,
+                                testResults: '**/test-reports/*.xml'
+                            )
+						}
+					}
+				}
+
+			}
+			//steps { runUnittests() }
 		}
 
         //Building a Docker image with an application
@@ -30,9 +71,9 @@ pipeline {
 		}
         
 		//Uploading the  image to the remote Docker repository 
-		stage("Push to Docker-repo") {
+		/*stage("Push to Docker-repo") {
             steps { pushImage() }
-                }
+                }*/
 
         //Deploying the application from the Docker image on the Dev server 
 		stage("Deploy - Dev") {
@@ -48,7 +89,7 @@ pipeline {
 
 		//Dev: app_dev, 8085
         //Stage:  app_stage, 8086
-        //Live: app_live, 8087
+        //Prod: app_prod, 8087
 
 		
 		//Running UAT Test on Dev Server 		
@@ -98,19 +139,24 @@ pipeline {
 
 // steps
 
+
+
 def pushImage(){
     withCredentials([usernamePassword(credentialsId: 'docker-login-password-authentification', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASSWORD')]) 
                 {
-                 sh "docker login --username ${DOCKER_USER} --password ${DOCKER_PASSWORD} https://mydocker.repo.servername"
-                 sh "docker push mydocker.repo.servername/myapp:${BUILD_NUMBER}"
+				 //https://mydocker.repo.servername	 https://hub.docker.com/repository/docker/vieskov1980/randomcat
+                 sh "docker login --username ${DOCKER_USER} --password ${DOCKER_PASSWORD}"
+                 sh "docker push vieskov1980/randomcat:${BUILD_ID}"
+				 
                 }
 }
 
 def buildApp() {
-	dir ('mnist-flask-app' ) {
+	//dir ('randomcat' ) {
 		//def appImage = docker.build("mydocker.repo.servername/myapp:${BUILD_NUMBER}")
-		def appImage = docker.build("mnist-flask-app:${BUILD_NUMBER}")
-	}
+	//	def appImage = docker.build("randomcat:${BUILD_NUMBER}")
+	//}
+	sh"docker build -t randomcat:${BUILD_NUMBER} ."
 }
 
 
@@ -138,7 +184,7 @@ def deploy(environment) {
 
 	sh "docker ps -f name=${containerName} -q | xargs --no-run-if-empty docker stop"
 	sh "docker ps -a -f name=${containerName} -q | xargs -r docker rm"
-	sh "docker run -d -p ${port}:5000 --name ${containerName} mnist-flask-app:${BUILD_NUMBER}"
+	sh "docker run -d -p ${port}:5000 --name ${containerName} randomcat:${BUILD_ID}"
 
 }
 
@@ -153,11 +199,28 @@ def approve() {
 
 
 def runUnittests() {
-	sh "pip3 install --no-cache-dir -r ./mnist-flask-app/requirements.txt"
-	sh "python3 mnist-flask-app/tests/test_flask_app.py"
+	
+    //sh"export WORKSPACE=`pwd`"
+	//python3 -m pip install --user virtualenv
+	//sh "pip3 install --user virtualenv"
+    //sh"virtualenv testenv -p /usr/bin/python3"
+    //sh"python3 -m venv testenv"  //!
+    //sh"source testenv/bin/activate" //!
+	//sh "pip3 install --no-cache-dir -r ./requirements.txt"	
+	//sh "cd /var/lib/jenkins/workspace/randomcat/"
+	//sh "python3  ./test_flask_app.py"
+	//sh "deactivate"
+	//sh "exit"
+	sh "chmod +x -R ${env.WORKSPACE}"
+	sh "./tests/runUT.sh"
+	
+
+	
+	
 }
 
 
 def runUAT(port) {
-	sh "mnist-flask-app/tests/runUAT.sh ${port}"
+	sh "chmod +x -R ${env.WORKSPACE}"
+	sh "./tests/runUAT.sh ${port}"
 }

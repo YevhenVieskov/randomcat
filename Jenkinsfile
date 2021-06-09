@@ -28,7 +28,7 @@ pipeline {
 		stage("Test - Unit tests") {
 			agent { docker { image 'python:3.5-alpine' } }
 			stages{
-				stage("Build test image"){
+				stage("Build Python image"){
 					steps{
 						withEnv(["HOME=${env.WORKSPACE}"]) {
 						    sh "python -m pip install --user --no-cache-dir -r requirements.txt "
@@ -42,7 +42,7 @@ pipeline {
                     }*/
 				}
 
-				stage("Test") {
+				stage("Perform Unit Tests") {
 					steps{
 						withEnv(["HOME=${env.WORKSPACE}"]) {
 						    sh "python test_flask_app.py"
@@ -89,7 +89,7 @@ pipeline {
 
 		//Dev: app_dev, 8085
         //Stage:  app_stage, 8086
-        //Live: app_live, 8087
+        //Prod: app_prod, 8087
 
 		
 		//Running UAT Test on Dev Server 		
@@ -117,19 +117,45 @@ pipeline {
             steps { runUAT(88) }
 		}
 
-        //Manual confirmation of application deployment on the Live server 
+        //Manual confirmation of application deployment on the Prod server 
         stage("Approve") {
             steps { approve() }
 		}
 
         //Deploying the application from the Docker image collected in step stage("Build") 
-		//on the Live server (similar to how it was done in step stage("Deploy - Dev")) 
-        stage("Deploy - Live") {
-            steps { deploy('live') }
+		//on the Prod server (similar to how it was done in step stage("Deploy - Dev")) 
+       
+	    stage ("Save image") {
+			sh "docker image save -o ~/app.tar randomcat:${BUILD_NUMBER}"
 		}
+
+		stage ("Copy image to remote server") {
+			sh "scp -r ~/app.tar ubuntu@52.14.77.84 ~/"
+		}
+
+        stage("Deploy - prod") {
+            steps { 
+                script {
+                    def remote = [:]
+                    remote.user = 'ubuntu'
+                    remote.host = '52.14.77.84'
+                    remote.name = 'ubuntu'
+                    remote.identityFile = '~/.ssh/vieskovtf.pem'
+                    remote.allowAnyHosts = 'true'
+                    sshCommand remote: remote, command: 'docker load -i ~/app.tar'
+                    sshCommand remote: remote, command: 'docker run -d -p 80:5000 randomcat:${BUILD_NUMBER}'
+                }
+            } 
+        }
+
+        /*stage("Deploy - prod") {
+           steps { 
+				deploy('prod')  //randomcat:${BUILD_ID}
+				}
+		}*/
         
-		//Running a UAT test on a Live server (similar to how it was done in step stage("Test - UAT Dev")) 
-		stage("Test - UAT Live") {
+		//Running a UAT test on a Prod server (similar to how it was done in step stage("Test - UAT Dev")) 
+		stage("Test - UAT prod") {
             steps { runUAT(80) }
 		}
 
@@ -173,8 +199,8 @@ def deploy(environment) {
 		containerName = "app_stage"
 		port = "88"
 	}
-	else if ("${environment}" == 'live') {
-		containerName = "app_live"
+	else if ("${environment}" == 'prod') {
+		containerName = "app__prod"
 		port = "80"
 	}
 	else {

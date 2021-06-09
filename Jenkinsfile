@@ -4,8 +4,6 @@
 def DOCKER_USER = "vieskov"
 def DOCKER_PASSWORD = "xxxx"
 def WORKSPACE = "/usr/lib/python"                            //"/var/lib/jenkins/jobs/randomcat"
-def REMOTE_IP="52.14.77.84"
-
 
 pipeline {
     agent any
@@ -44,7 +42,7 @@ pipeline {
                     }*/
 				}
 
-				stage("Perform Unit Tests") {
+				stage("Test") {
 					steps{
 						withEnv(["HOME=${env.WORKSPACE}"]) {
 						    sh "python test_flask_app.py"
@@ -126,15 +124,12 @@ pipeline {
 
         //Deploying the application from the Docker image collected in step stage("Build") 
 		//on the Live server (similar to how it was done in step stage("Deploy - Dev")) 
-        stage("Deploy - prod") {
-            steps { 
-				    deploy('prod') 
-
-				}
+        stage("Deploy - Live") {
+            steps { deploy('live') }
 		}
         
 		//Running a UAT test on a Live server (similar to how it was done in step stage("Test - UAT Dev")) 
-		stage("Test - UAT Prod") {
+		stage("Test - UAT Live") {
             steps { runUAT(80) }
 		}
 
@@ -178,8 +173,8 @@ def deploy(environment) {
 		containerName = "app_stage"
 		port = "88"
 	}
-	else if ("${environment}" == 'prod') {
-		containerName = "app_prod"
+	else if ("${environment}" == 'live') {
+		containerName = "app_live"
 		port = "80"
 	}
 	else {
@@ -189,7 +184,7 @@ def deploy(environment) {
 
 	sh "docker ps -f name=${containerName} -q | xargs --no-run-if-empty docker stop"
 	sh "docker ps -a -f name=${containerName} -q | xargs -r docker rm"
-	sh "docker run -d -p ${port}:5000 --name ${containerName} hands-on-jenkins/myapp:${BUILD_NUMBER}"
+	sh "docker run -d -p ${port}:5000 --name ${containerName} randomcat:${BUILD_ID}"
 
 }
 

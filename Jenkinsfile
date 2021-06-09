@@ -26,7 +26,28 @@ pipeline {
 	    } 
 		
 		stage("Test - Unit tests") {
-			steps { runUnittests() }
+			agent { docker { image 'python:3.5-alpine' } }
+			stages{
+				stage("Build test image"){
+					steps{
+						sh "pip install --no-cache-dir -r requirements.txt"
+					}
+				}
+
+				stage("Test") {
+					steps{
+						sh "python test_flask_app.py"
+					}
+
+					post {
+						always {
+							junit "test-reports/*.xml"
+						}
+					}
+				}
+
+			}
+			//steps { runUnittests() }
 		}
 
         //Building a Docker image with an application

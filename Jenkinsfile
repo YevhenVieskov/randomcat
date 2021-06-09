@@ -135,17 +135,7 @@ pipeline {
 			/*steps {
 			    //sh "scp -r ~/app.tar ubuntu@52.14.77.84: /home/ubuntu/"
 				//sshPublisher(publishers: [sshPublisherDesc(configName: 'SERVER_NAME', transfers: [sshTransfer(cleanRemote: false, excludes: '', execCommand: 'apt-get update', execTimeout: 120000, flatten: false, makeEmptyDirs: false, noDefaultExcludes: false, patternSeparator: '[, ]+', remoteDirectory: '', remoteDirectorySDF: false, removePrefix: '', sourceFiles: '*.war')], usePromotionTimestamp: false, useWorkspaceInPromotion: false, verbose: false)])
-				script {
-                    def remote = [:]
-                    remote.user = 'ubuntu'
-                    remote.host = '52.14.77.84'
-                    remote.name = 'ubuntu'
-                    remote.identityFile = '~/.ssh/vieskovtf.pem'
-                    remote.allowAnyHosts = 'true'
-                    sshPut remote: remote, from: '~/app.tar', into" ~/"
-                   
-                }
-			}*/
+				*/
 			steps {
 			def remote = [:]
             remote.name = "ubuntu"

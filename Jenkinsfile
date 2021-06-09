@@ -146,6 +146,7 @@ pipeline {
                    
                 }
 			}*/
+			steps {
 			def remote = [:]
             remote.name = "ubuntu"
             remote.host = "52.14.77.84"
@@ -162,6 +163,7 @@ pipeline {
                     //sshRemove remote: remote, path: 'abc.sh'
                 }
             }
+			}
 
 		}
 

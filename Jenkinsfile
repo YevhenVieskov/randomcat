@@ -1,8 +1,8 @@
 #!/usr/bin/groovy
 
 //variables
-def DOCKER_USER = "vieskov1980"
-def DOCKER_PASSWORD = "xkdPzjUzzXZtgz9"
+def DOCKER_USER = "vieskov"
+def DOCKER_PASSWORD = "xxxx"
 def WORKSPACE = "/usr/lib/python"                            //"/var/lib/jenkins/jobs/randomcat"
 
 pipeline {
@@ -34,11 +34,19 @@ pipeline {
 						    sh "python -m pip install --user --no-cache-dir -r requirements.txt "
 						}
 					}
+
+					post {
+                        cleanup {
+                            cleanWs()
+                        }
+                    }
 				}
 
 				stage("Test") {
 					steps{
-						sh "python test_flask_app.py"
+						withEnv(["HOME=${env.WORKSPACE}"]) {
+						    sh "python test_flask_app.py"
+						}
 					}
 
 					post {

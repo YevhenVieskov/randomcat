@@ -133,7 +133,17 @@ pipeline {
 
 		stage ("Copy image to remote server") {
 			steps {
-			    sh "scp -r ~/app.tar ubuntu@52.14.77.84: /home/ubuntu/"
+			    //sh "scp -r ~/app.tar ubuntu@52.14.77.84: /home/ubuntu/"
+				script {
+                    def remote = [:]
+                    remote.user = 'ubuntu'
+                    remote.host = '52.14.77.84'
+                    remote.name = 'ubuntu'
+                    remote.identityFile = '~/.ssh/vieskovtf.pem'
+                    remote.allowAnyHosts = 'true'
+                    sshPut remote: remote, from: '~/app.tar', into" ~/"
+                   
+                }
 			}
 		}
 
@@ -146,7 +156,7 @@ pipeline {
                     remote.name = 'ubuntu'
                     remote.identityFile = '~/.ssh/vieskovtf.pem'
                     remote.allowAnyHosts = 'true'
-                    sshCommand remote: remote, command: 'docker load -i /home/ubuntu/app.tar'
+                    sshCommand remote: remote, command: 'docker load -i ~/app.tar'
                     sshCommand remote: remote, command: 'docker run -d -p 80:5000 randomcat:${BUILD_NUMBER}'
                 }
             } 

@@ -15,7 +15,10 @@ pipeline {
 
 	environment {
 		PYTHONPATH = "${WORKSPACE}" // /var/lib/python "${WORKSPACE}" "${GIT_COMMIT}"
+		MY_PROD_CRED = credentials('ssh-prod')
 	}
+
+	
 
     stages {
 
@@ -134,17 +137,17 @@ pipeline {
 			}
 		}
 
-		/*stage ("Copy image") {
+		stage ("Copy image") {
 			steps {
 				withEnv(["HOME=/home/ubuntu"]) {
-			        sh "scp  -i  /home/ubuntu/.ssh/id_rsa_jprod /home/ubuntu/docker_images/app.tar ubuntu@13.59.128.184:/home/ubuntu/docker_images/"
+			        sh "scp  /home/ubuntu/docker_images/app.tar ubuntu@13.59.128.184:/home/ubuntu/docker_images/"
 				}
 			}
-		}*/
+		}
 
 
         
-		stage("SSH copy image to prod") {
+		/*stage("SSH copy image to prod") {
 			
 			steps{
 				
@@ -166,7 +169,7 @@ pipeline {
 			    
 			}
 			
-		}
+		}*/
 
 		
 

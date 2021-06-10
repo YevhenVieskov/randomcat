@@ -4,7 +4,7 @@
 def DOCKER_USER = "vieskov"
 def DOCKER_PASSWORD = "xxxx"
 def WORKSPACE = "/usr/lib/python"                            //"/var/lib/jenkins/jobs/randomcat"
-/*def remote = [name:"ubuntu", host: "52.14.77.84", user: "ubuntu", identityFile: "vieskovtf.pem", allowAnyHosts: "true" ]*/
+def remote = [name:"ubuntu", host: "52.14.77.84", user: "ubuntu", identityFile: "vieskovtf.pem", allowAnyHosts: "true" ]
 
 pipeline {
     agent any
@@ -132,25 +132,6 @@ pipeline {
 			}
 		}
 
-		stage("SSH copy image to prod") {
-			steps{
-				script {
-					def remote[:]
-					remote.name="ubuntu"
-					remote.host="52.14.77.84"					
-					remote.allowAnyHosts="true"
-					withCredentials([sshUserPrivateKey(credentialsId: 'vieskovtf', keyFileVariable: '~/.ssh/vieskovtf.pem', passphraseVariable: '', usernameVariable: 'ubuntu')]) {
-					    remote.user="ubuntu"
-					    remote.identityFile="vieskovtf.pem"
-						stage("SSH steps copy") {
-							sshPut remote: remote, from: '~/app.tar', into: '~/'
-						}
-					}
-					
-				}
-			}
-		}
-
 		/*stage ("Copy image to remote server") {
 			steps {
 			    //sh "scp -r ~/app.tar ubuntu@52.14.77.84: /home/ubuntu/"
@@ -159,7 +140,7 @@ pipeline {
 		}*/	
 			
            
-		/*withCredentials([sshUserPrivateKey(credentialsId: 'vieskovtf', keyFileVariable: '~/.ssh/vieskovtf.pem', passphraseVariable: '', usernameVariable: 'ubuntu')]) {
+		withCredentials([sshUserPrivateKey(credentialsId: 'vieskovtf', keyFileVariable: '~/.ssh/vieskovtf.pem', passphraseVariable: '', usernameVariable: 'ubuntu')]) {
                 
             stage("SSH copy image to prod") {
                 steps{   
@@ -184,7 +165,7 @@ pipeline {
                 } 
             }
 
-		}*/
+		}
 
         /*stage("Deploy - prod") {
            steps { 

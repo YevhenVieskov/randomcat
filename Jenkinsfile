@@ -129,7 +129,7 @@ pipeline {
 	    stage ("Save image") {
 			steps {
 				withEnv(["HOME=/home/ubuntu"]) {
-			        sh "docker image save -o ~/app.tar randomcat:${BUILD_NUMBER}"
+			        sh "docker image save -o ~/docker_images/app.tar randomcat:${BUILD_NUMBER}"
 				}
 			}
 		}
@@ -146,7 +146,7 @@ pipeline {
 					remote.identityFile="vieskovtf.pem"
 					stage("SSH steps copy") {
 						withEnv(["HOME=/home/ubuntu"]) {
-						    sshPut remote: remote, from: '~/app.tar', into: '~/'
+						    sshPut remote: remote, from: '~/docker_images/app.tar', into: '~/'
 						}
 					}
 					

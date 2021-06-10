@@ -146,7 +146,7 @@ pipeline {
 			}
 		}*/
 
-		stage ('Copy image') {
+		stage ("Copy image") {
             steps{
                 sshagent(credentials : ['ssh-prod']) {
                     
@@ -155,7 +155,7 @@ pipeline {
             }
         }
 
-		stage ('Copy image') {
+		stage ("Deploy - prod") {
             steps{
                 sshagent(credentials : ['ssh-prod']) {
                     

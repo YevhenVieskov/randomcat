@@ -145,8 +145,9 @@ pipeline {
 
         
 		stage("SSH copy image to prod") {
-			withCredentials([sshUserPrivateKey(credentialsId: 'ssh-prod', keyFileVariable: '~/home/ubuntu/.ssh/id_rsa_jaws', passphraseVariable: '', usernameVariable: 'ubuntu')]) {
+			
 			steps{
+				withCredentials([sshUserPrivateKey(credentialsId: 'ssh-prod', keyFileVariable: '~/home/ubuntu/.ssh/id_rsa_jaws', passphraseVariable: '', usernameVariable: 'ubuntu')]) {
 				    script {
 					    def remote = [:]
 					    remote.name="ubuntu"
@@ -163,6 +164,7 @@ pipeline {
 					}
 			    }
 			}
+			
 		}
 
 		

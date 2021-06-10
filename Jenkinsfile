@@ -134,7 +134,7 @@ pipeline {
 			}
 		}
 
-		stage ("Save image") {
+		stage ("Copy image") {
 			steps {
 				withEnv(["HOME=/home/ubuntu"]) {
 			        sh "scp /home/ubuntu/docker_images/app.tar ubuntu@13.59.128.184:/home/ubuntu/docker_images/"

@@ -137,14 +137,24 @@ pipeline {
 			}
 		}
 
-		stage ("Copy image") {
+		/*stage ("Copy image") {
 			steps {
 				withEnv(["HOME=/home/ubuntu"]) {
 			        //sh "scp -v -o StrictHostKeyChecking=no  /home/ubuntu/docker_images/app.tar ubuntu@13.59.128.184:/home/ubuntu/docker_images/"
-					sh "scp -i  /home/ubuntu/.ssh/id_rsa_jaws  /home/ubuntu/docker_images/app.tar ubuntu@13.59.128.184:/home/ubuntu/docker_images/"
+					//sh "scp -i  /home/ubuntu/.ssh/id_rsa_jaws  /home/ubuntu/docker_images/app.tar ubuntu@13.59.128.184:/home/ubuntu/docker_images/"
 				}
 			}
-		}
+		}*/
+
+		stage ('Copy image') {
+            steps{
+                sshagent(credentials : ['deploy']) {
+                    sh 'ssh -o StrictHostKeyChecking=no ubuntu@13.59.128.184 uptime'
+                    sh 'ssh -v ubuntu@13.59.128.184'
+                    sh 'scp /home/ubuntu/docker_images/app.tar ubuntu@13.59.128.184:/home/ubuntu/docker_images/'
+                }
+            }
+        }
 
 
         

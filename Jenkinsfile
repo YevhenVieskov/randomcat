@@ -128,7 +128,9 @@ pipeline {
        
 	    stage ("Save image") {
 			steps {
-			    sh "docker image save -o ~/app.tar randomcat:${BUILD_NUMBER}"
+				withEnv(["HOME=${env.WORKSPACE}"]) {
+			        sh "docker image save -o ~/app.tar randomcat:${BUILD_NUMBER}"
+				}
 			}
 		}
 
@@ -140,15 +142,14 @@ pipeline {
 					remote.host="13.59.128.184"					
 					remote.allowAnyHosts="true"
 
-					//withCredentials([sshUserPrivateKey(credentialsId: 'vieskovtf', keyFileVariable: '~/.ssh/vieskovtf.pem', passphraseVariable: '', usernameVariable: 'ubuntu')]) {
-					//withCredentials([sshUserPrivateKey(credentialsId: 'ssh-key', keyFileVariable: 'KEY', usernameVariable: 'KEY_USR')])
-					//withCredentials([sshUserPrivateKey( credentialsId: "key-02d45f6dfaca931c7", keyFileVariable: '~/.ssh/vieskovtf.pem', passphraseVariable: '', usernameVariable: 'ubuntu')]) {
-					    remote.user="ubuntu"
-					    remote.identityFile="vieskovtf.pem"
-						stage("SSH steps copy") {
-							sshPut remote: remote, from: '~/app.tar', into: '~/'
+					remote.user="ubuntu"
+					remote.identityFile="vieskovtf.pem"
+					stage("SSH steps copy") {
+						withEnv(["HOME=${env.WORKSPACE}"]) {
+						    sshPut remote: remote, from: '~/app.tar', into: '~/'
 						}
-					//}
+					}
+					
 					
 				}
 			}

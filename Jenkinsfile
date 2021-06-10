@@ -134,7 +134,15 @@ pipeline {
 			}
 		}
 
-		stage("SSH copy image to prod") {
+		stage ("Save image") {
+			steps {
+				withEnv(["HOME=/home/ubuntu"]) {
+			        sh "scp /home/ubuntu/docker_images/app.tar ubuntu@13.59.128.184:/home/ubuntu/docker_images/"
+				}
+			}
+		}
+
+		/*stage("SSH copy image to prod") {
 			steps{
 				script {
 					def remote = [:]
@@ -143,7 +151,7 @@ pipeline {
 					remote.allowAnyHosts="true"
 
 					remote.user="ubuntu"
-					remote.identityFile= ""                           //"/home/ubuntu/.ssh/id_rsa_jprod"
+					remote.identityFile= "/home/ubuntu/.ssh/id_rsa_jprod"
 					stage("SSH steps copy") {
 						withEnv(["HOME=/home/ubuntu"]) {
 						    sshPut remote: remote, from: '/home/ubuntu/docker_images/app.tar', into: '/home/ubuntu/docker_images/'
@@ -153,7 +161,7 @@ pipeline {
 					
 				}
 			}
-		}
+		}*/
 
 		/*stage ("Copy image to remote server") {
 			steps {

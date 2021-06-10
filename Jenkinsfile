@@ -135,7 +135,7 @@ pipeline {
 		stage("SSH copy image to prod") {
 			steps{
 				script {
-					def remote[:]
+					def remote = [:]
 					remote.name="ubuntu"
 					remote.host="13.59.128.184"					
 					remote.allowAnyHosts="true"

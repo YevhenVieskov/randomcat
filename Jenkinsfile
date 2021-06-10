@@ -143,7 +143,7 @@ pipeline {
 					remote.allowAnyHosts="true"
 
 					remote.user="ubuntu"
-					remote.identityFile="vieskovtf.pem"
+					remote.identityFile="/home/ubuntu/.ssh/vieskovtf.pem"
 					stage("SSH steps copy") {
 						withEnv(["HOME=/home/ubuntu"]) {
 						    sshPut remote: remote, from: '/home/ubuntu/docker_images/app.tar', into: '/home/ubuntu/docker_images/'

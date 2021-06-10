@@ -137,7 +137,7 @@ pipeline {
 				script {
 					def remote[:]
 					remote.name="ubuntu"
-					remote.host="52.14.77.84"					
+					remote.host="13.59.128.184"					
 					remote.allowAnyHosts="true"
 					withCredentials([sshUserPrivateKey(credentialsId: 'vieskovtf', keyFileVariable: '~/.ssh/vieskovtf.pem', passphraseVariable: '', usernameVariable: 'ubuntu')]) {
 					    remote.user="ubuntu"

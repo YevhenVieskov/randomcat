@@ -147,8 +147,9 @@ pipeline {
 		stage("SSH copy image to prod") {
 			
 			steps{
-				withCredentials([sshUserPrivateKey(credentialsId: 'ssh-prod', keyFileVariable: '~/home/ubuntu/.ssh/id_rsa_jaws', passphraseVariable: '', usernameVariable: 'ubuntu')]) {
-				    script {
+				
+			    script {
+					withCredentials([sshUserPrivateKey(credentialsId: 'ssh-prod', keyFileVariable: '~/home/ubuntu/.ssh/id_rsa_jaws', passphraseVariable: '', usernameVariable: 'ubuntu')]) {
 					    def remote = [:]
 					    remote.name="ubuntu"
 					    remote.host="13.59.128.184"					
@@ -160,9 +161,9 @@ pipeline {
 						        sshPut remote: remote, from: '/home/ubuntu/docker_images/app.tar', into: '/home/ubuntu/docker_images/'
 						    }
 					    }
-					
 					}
-			    }
+				}
+			    
 			}
 			
 		}

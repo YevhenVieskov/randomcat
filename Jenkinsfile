@@ -139,7 +139,9 @@ pipeline {
 					remote.name="ubuntu"
 					remote.host="13.59.128.184"					
 					remote.allowAnyHosts="true"
-					withCredentials([sshUserPrivateKey(credentialsId: 'vieskovtf', keyFileVariable: '~/.ssh/vieskovtf.pem', passphraseVariable: '', usernameVariable: 'ubuntu')]) {
+
+					//withCredentials([sshUserPrivateKey(credentialsId: 'vieskovtf', keyFileVariable: '~/.ssh/vieskovtf.pem', passphraseVariable: '', usernameVariable: 'ubuntu')]) {
+					withCredentials([sshUserPrivateKey(keyFileVariable: '~/.ssh/vieskovtf.pem', passphraseVariable: '', usernameVariable: 'ubuntu')]) {
 					    remote.user="ubuntu"
 					    remote.identityFile="vieskovtf.pem"
 						stage("SSH steps copy") {

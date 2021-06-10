@@ -142,13 +142,13 @@ pipeline {
 
 					//withCredentials([sshUserPrivateKey(credentialsId: 'vieskovtf', keyFileVariable: '~/.ssh/vieskovtf.pem', passphraseVariable: '', usernameVariable: 'ubuntu')]) {
 					//withCredentials([sshUserPrivateKey(credentialsId: 'ssh-key', keyFileVariable: 'KEY', usernameVariable: 'KEY_USR')])
-					withCredentials([sshUserPrivateKey( credentialsId: "key-02d45f6dfaca931c7", keyFileVariable: '~/.ssh/vieskovtf.pem', passphraseVariable: '', usernameVariable: 'ubuntu')]) {
+					//withCredentials([sshUserPrivateKey( credentialsId: "key-02d45f6dfaca931c7", keyFileVariable: '~/.ssh/vieskovtf.pem', passphraseVariable: '', usernameVariable: 'ubuntu')]) {
 					    remote.user="ubuntu"
 					    remote.identityFile="vieskovtf.pem"
 						stage("SSH steps copy") {
 							sshPut remote: remote, from: '~/app.tar', into: '~/'
 						}
-					}
+					//}
 					
 				}
 			}

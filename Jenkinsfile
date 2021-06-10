@@ -149,11 +149,17 @@ pipeline {
 		stage ('Copy image') {
             steps{
                 sshagent(credentials : ['ssh-prod']) {
-                    //sh 'ssh -o StrictHostKeyChecking=no ubuntu@13.59.128.184 uptime'
-                    //sh 'ssh -v ubuntu@13.59.128.184'
-                    //sh 'scp -v -o StrictHostKeyChecking=no /home/ubuntu/docker_images/app.tar ubuntu@13.59.128.184:/home/ubuntu/docker_images/'
-					//sh 'scp -v -i /home/ubuntu/.ssh/id_rsa_jprod /home/ubuntu/docker_images/app.tar ubuntu@13.59.128.184:/home/ubuntu/docker_images/'
+                    
 					sh 'scp -v  /home/ubuntu/docker_images/app.tar ubuntu@13.59.128.184:/home/ubuntu/docker_images/'
+                }
+            }
+        }
+
+		stage ('Copy image') {
+            steps{
+                sshagent(credentials : ['ssh-prod']) {
+                    
+					sh 'ssh ubuntu@13.59.128.184   docker load -i /home/ubuntu/docker_images/app.tar && docker run -d -p 80:5000 randomcat:${BUILD_NUMBER}'
                 }
             }
         }
@@ -229,7 +235,9 @@ pipeline {
         
 		//Running a UAT test on a Prod server (similar to how it was done in step stage("Test - UAT Dev")) 
 		stage("Test - UAT prod") {
-            steps { runUAT(80) }
+            steps { 
+				//runUAT(80)
+				}
 		}
 
 	}

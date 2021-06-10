@@ -4,6 +4,7 @@
 def DOCKER_USER = "vieskov"
 def DOCKER_PASSWORD = "xxxx"
 def WORKSPACE = "/usr/lib/python"                            //"/var/lib/jenkins/jobs/randomcat"
+def remote = [name:"ubuntu", host: "52.14.77.84", user: "ubuntu", identityFile: "vieskovtf.pem", allowAnyHosts: "true" ]
 
 pipeline {
     agent any
@@ -131,46 +132,40 @@ pipeline {
 			}
 		}
 
-		stage ("Copy image to remote server") {
-			/*steps {
+		/*stage ("Copy image to remote server") {
+			steps {
 			    //sh "scp -r ~/app.tar ubuntu@52.14.77.84: /home/ubuntu/"
 				//sshPublisher(publishers: [sshPublisherDesc(configName: 'SERVER_NAME', transfers: [sshTransfer(cleanRemote: false, excludes: '', execCommand: 'apt-get update', execTimeout: 120000, flatten: false, makeEmptyDirs: false, noDefaultExcludes: false, patternSeparator: '[, ]+', remoteDirectory: '', remoteDirectorySDF: false, removePrefix: '', sourceFiles: '*.war')], usePromotionTimestamp: false, useWorkspaceInPromotion: false, verbose: false)])
-				*/
-			steps {
-			def remote = [:]
-            remote.name = "ubuntu"
-            remote.host = "52.14.77.84"
-            remote.allowAnyHosts = true
-			withCredentials([sshUserPrivateKey(credentialsId: 'vieskovtf', keyFileVariable: '~/.ssh/vieskovtf.pem', passphraseVariable: '', usernameVariable: 'ubuntu')]) {
-                remote.user = userName
-                remote.identityFile = identity
-                stage("SSH copy image to prod") {
-                    //writeFile file: 'abc.sh', text: 'ls'
+				}
+		}*/	
+			
+           
+		withCredentials([sshUserPrivateKey(credentialsId: 'vieskovtf', keyFileVariable: '~/.ssh/vieskovtf.pem', passphraseVariable: '', usernameVariable: 'ubuntu')]) {
+                
+            stage("SSH copy image to prod") {
+                steps{   
+                
+				    sshPut remote: remote, from: '~/app.tar', into: '~/'
+					 //writeFile file: 'abc.sh', text: 'ls'
                     //sshCommand remote: remote, command: 'for i in {1..5}; do echo -n \"Loop \$i \"; date ; sleep 1; done'
-                    sshPut remote: remote, from: '~/app.tar', into: '~/'
                     //sshGet remote: remote, from: 'abc.sh', into: 'bac.sh', override: true
                     //sshScript remote: remote, script: 'abc.sh'
                     //sshRemove remote: remote, path: 'abc.sh'
-                }
+				}
             }
-			}
+        }
+			
+
+		withCredentials([sshUserPrivateKey(credentialsId: 'vieskovtf', keyFileVariable: '~/.ssh/vieskovtf.pem', passphraseVariable: '', usernameVariable: 'ubuntu')]) {
+
+            stage("Deploy - prod") {
+                steps { 
+                    sshCommand remote: remote, command: 'docker load -i ~/app.tar'
+                    sshCommand remote: remote, command: 'docker run -d -p 80:5000 randomcat:${BUILD_NUMBER}'               
+                } 
+            }
 
 		}
-
-        stage("Deploy - prod") {
-            steps { 
-                script {
-                    def remote = [:]
-                    remote.user = 'ubuntu'
-                    remote.host = '52.14.77.84'
-                    remote.name = 'ubuntu'
-                    remote.identityFile = '~/.ssh/vieskovtf.pem'
-                    remote.allowAnyHosts = 'true'
-                    sshCommand remote: remote, command: 'docker load -i ~/app.tar'
-                    sshCommand remote: remote, command: 'docker run -d -p 80:5000 randomcat:${BUILD_NUMBER}'
-                }
-            } 
-        }
 
         /*stage("Deploy - prod") {
            steps { 

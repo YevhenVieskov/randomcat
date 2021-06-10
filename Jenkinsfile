@@ -137,7 +137,7 @@ pipeline {
 		stage ("Copy image") {
 			steps {
 				withEnv(["HOME=/home/ubuntu"]) {
-			        sh "scp /home/ubuntu/docker_images/app.tar ubuntu@13.59.128.184:/home/ubuntu/docker_images/"
+			        sh "scp  -i  /home/ubuntu/.ssh/id_rsa_jprod /home/ubuntu/docker_images/app.tar ubuntu@13.59.128.184:/home/ubuntu/docker_images/"
 				}
 			}
 		}

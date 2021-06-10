@@ -234,11 +234,11 @@ pipeline {
 		}*/
         
 		//Running a UAT test on a Prod server (similar to how it was done in step stage("Test - UAT Dev")) 
-		stage("Test - UAT prod") {
+		/*stage("Test - UAT prod") {
             steps { 
-				//runUAT(80)
+				runUAT(80)
 				}
-		}
+		}*/
 
 	}
 }
@@ -305,25 +305,9 @@ def approve() {
 }
 
 
-def runUnittests() {
-	
-    //sh"export WORKSPACE=`pwd`"
-	//python3 -m pip install --user virtualenv
-	//sh "pip3 install --user virtualenv"
-    //sh"virtualenv testenv -p /usr/bin/python3"
-    //sh"python3 -m venv testenv"  //!
-    //sh"source testenv/bin/activate" //!
-	//sh "pip3 install --no-cache-dir -r ./requirements.txt"	
-	//sh "cd /var/lib/jenkins/workspace/randomcat/"
-	//sh "python3  ./test_flask_app.py"
-	//sh "deactivate"
-	//sh "exit"
+def runUnittests() {	   
 	sh "chmod +x -R ${env.WORKSPACE}"
 	sh "./tests/runUT.sh"
-	
-
-	
-	
 }
 
 

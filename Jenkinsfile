@@ -151,7 +151,7 @@ pipeline {
             steps{
                 sshagent(credentials : ['ssh-prod']) {
                     
-					sh 'scp -v  /home/ubuntu/docker_images/app.tar ubuntu@${IP_DEPLOY}:/home/ubuntu/docker_images/'
+					sh "scp -v  /home/ubuntu/docker_images/app.tar ubuntu@${IP_DEPLOY}:/home/ubuntu/docker_images/"
                 }
             }
         }

@@ -4,6 +4,7 @@
 def DOCKER_USER = "vieskov"
 def DOCKER_PASSWORD = "xxxx"
 def WORKSPACE = "/usr/lib/python"                            //"/var/lib/jenkins/jobs/randomcat"
+def IP_DEPLOY = "13.59.128.184"
 /*def remote = [name:"ubuntu", host: "52.14.77.84", user: "ubuntu", identityFile: "vieskovtf.pem", allowAnyHosts: "true" ]*/
 
 pipeline {
@@ -150,7 +151,7 @@ pipeline {
             steps{
                 sshagent(credentials : ['ssh-prod']) {
                     
-					sh 'scp -v  /home/ubuntu/docker_images/app.tar ubuntu@13.59.128.184:/home/ubuntu/docker_images/'
+					sh 'scp -v  /home/ubuntu/docker_images/app.tar ubuntu@${IP_DEPLOY}:/home/ubuntu/docker_images/'
                 }
             }
         }
@@ -158,8 +159,11 @@ pipeline {
 		stage ("Deploy - prod") {
             steps{
                 sshagent(credentials : ['ssh-prod']) {
-                    
-					sh 'ssh ubuntu@13.59.128.184   docker load -i /home/ubuntu/docker_images/app.tar && docker run -d -p 80:5000 randomcat:${BUILD_NUMBER}'
+                    //    /^randomcat:[0-9]{1,10000}$/
+					sh "ssh ubuntu@${IP_DEPLOY} docker stop $(docker ps -a -q)"
+                    sh "ssh ubuntu@${IP_DEPLOY} docker rm $(docker ps -a -q)"
+	                sh "ssh ubuntu@${IP_DEPLOY} docker rmi $(docker images -a -q)"
+					sh "ssh ubuntu@${IP_DEPLOY} docker load -i /home/ubuntu/docker_images/app.tar && docker run -d -p 80:5000 randomcat:${BUILD_NUMBER}"
                 }
             }
         }
@@ -234,11 +238,16 @@ pipeline {
 		}*/
         
 		//Running a UAT test on a Prod server (similar to how it was done in step stage("Test - UAT Dev")) 
-		/*stage("Test - UAT prod") {
+		stage("Test - UAT prod") {
             steps { 
-				runUAT(80)
-				}
-		}*/
+				//runUAT(80)
+				sshagent(credentials : ['ssh-prod']) { 										                 
+					sh "scp -v  ~/tests/runUAT.sh ubuntu@13.59.128.184:/home/ubuntu/docker_images/"
+					sh "ssh ubuntu@${IP_DEPLOY} chmod +x -R /home/ubuntu/docker_images/runUAT.sh"
+	                sh "ssh ubuntu@${IP_DEPLOY} /home/ubuntu/docker_images/runUAT.sh 80"
+                }
+			}
+		}
 
 	}
 }

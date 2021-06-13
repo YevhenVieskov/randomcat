@@ -160,9 +160,9 @@ pipeline {
             steps{
                 sshagent(credentials : ['ssh-prod']) {
                     //    /^randomcat:[0-9]{1,10000}$/
-					sh "ssh ubuntu@${IP_DEPLOY} docker stop \$(docker ps -a -q) 2> /dev/null || true"
-                    sh "ssh ubuntu@${IP_DEPLOY} docker rm \$(docker ps -a -q) 2> /dev/null || true"
-	                sh "ssh ubuntu@${IP_DEPLOY} docker rmi \$(docker images -a -q) 2> /dev/null || true"
+					//sh "ssh ubuntu@${IP_DEPLOY} docker stop \$(docker ps -a -q) 2> /dev/null || true"
+                    //sh "ssh ubuntu@${IP_DEPLOY} docker rm \$(docker ps -a -q) 2> /dev/null || true"
+	                //sh "ssh ubuntu@${IP_DEPLOY} docker rmi \$(docker images -a -q) 2> /dev/null || true"
 					sh "ssh ubuntu@${IP_DEPLOY} docker load -i /home/ubuntu/docker_images/app.tar && docker run -d -p 80:5000 randomcat:${BUILD_NUMBER}"
                 }
             }

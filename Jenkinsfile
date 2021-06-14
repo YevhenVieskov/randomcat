@@ -56,18 +56,18 @@ pipeline {
 
 					post {
 						always {
-							//sh 'ln -s tests/test-results-unit.xml $WORKSPACE'
-							//junit "**/test-reports/*.xml"
+							
 							junit(
                                 allowEmptyResults: true,
                                 testResults: '**/test-reports/*.xml'
                             )
+							
 						}
 					}
 				}
 
 			}
-			//steps { runUnittests() }
+			
 		}
 
         //Building a Docker image with an application
@@ -138,104 +138,57 @@ pipeline {
 			}
 		}
 
-		/*stage ("Copy image") {
-			steps {
-				withEnv(["HOME=/home/ubuntu"]) {
-			        //sh "scp -v -o StrictHostKeyChecking=no  /home/ubuntu/docker_images/app.tar ubuntu@13.59.128.184:/home/ubuntu/docker_images/"
-					//sh "scp -i  /home/ubuntu/.ssh/id_rsa_jaws  /home/ubuntu/docker_images/app.tar ubuntu@13.59.128.184:/home/ubuntu/docker_images/"
-				}
+		
+		stage("Clean production server")
+		{
+			steps{
+				//    /^randomcat:[0-9]{1,10000}$/
+				sshagent(credentials : ['ssh-prod']) {
+				    sh "ssh ubuntu@${IP_DEPLOY} docker stop \$(docker ps -a -q) 2> /dev/null || true"
+                    sh "ssh ubuntu@${IP_DEPLOY} docker rm -f \$(docker ps -a -q) 2> /dev/null || true"
+	                sh "ssh ubuntu@${IP_DEPLOY} docker rmi -f \$(docker images -a -q) 2> /dev/null || true"
+				    sh "ssh ubuntu@${IP_DEPLOY} docker volume rm -f \$(docker images -a -q) 2> /dev/null || true"
+				    sh "ssh ubuntu@${IP_DEPLOY} yes | docker image prune -f 2> /dev/null || true"
+				    sh "ssh ubuntu@${IP_DEPLOY} yes | docker network prune -f 2> /dev/null || true"
+				    sh "ssh ubuntu@${IP_DEPLOY} yes | docker volume prune -f 2> /dev/null || true"
+				    sh "ssh ubuntu@${IP_DEPLOY} yes | docker system prune -f 2> /dev/null || true"
+				    sh "ssh ubuntu@${IP_DEPLOY} service docker restart"      // 2> /dev/null || true"
+				
 			}
-		}*/
+			post {
+				always {
+					sh "ssh ubuntu@${IP_DEPLOY} docker-gc"
+				}			
+			}
+		}
 
-		stage ("Copy image") {
+		stage ("Deploy - prod") {
             steps{
                 sshagent(credentials : ['ssh-prod']) {
                     
 					sh "scp -v  /home/ubuntu/docker_images/app.tar ubuntu@${IP_DEPLOY}:/home/ubuntu/docker_images/"
                 }
             }
+
+			post {
+				always {
+					sh "docker-gc"
+				}			
+			}
         }
 
-		stage ("Deploy - prod") {
+
+
+		stage ("Run - prod") {
             steps{
                 sshagent(credentials : ['ssh-prod']) {
-                    //    /^randomcat:[0-9]{1,10000}$/
-					sh "ssh ubuntu@${IP_DEPLOY} docker stop \$(docker ps -a -q) 2> /dev/null || true"
-                    sh "ssh ubuntu@${IP_DEPLOY} docker rm \$(docker ps -a -q) 2> /dev/null || true"
-	                sh "ssh ubuntu@${IP_DEPLOY} docker rmi \$(docker images -a -q) 2> /dev/null || true"
-					sh "ssh ubuntu@${IP_DEPLOY} docker load -i /home/ubuntu/docker_images/app.tar && docker run -d -p 8080:5000 randomcat:${BUILD_NUMBER}"
+                    
+					sh "ssh ubuntu@${IP_DEPLOY} docker load -i /home/ubuntu/docker_images/app.tar && docker run -d -p 5000:5000 randomcat:${BUILD_NUMBER}"
                 }
             }
         }
 
-
-        
-		/*stage("SSH copy image to prod") {
-			
-			steps{
-				
-			    script {
-					withCredentials([sshUserPrivateKey(credentialsId: 'ssh-prod', keyFileVariable: '~/home/ubuntu/.ssh/id_rsa_jaws', passphraseVariable: '', usernameVariable: 'ubuntu')]) {
-					    def remote = [:]
-					    remote.name="ubuntu"
-					    remote.host="13.59.128.184"					
-					    remote.allowAnyHosts="true"                    
-					    remote.user="ubuntu"
-					    remote.identityFile= "/home/ubuntu/.ssh/id_rsa_jprod"
-					    stage("SSH steps copy") {
-						    withEnv(["HOME=/home/ubuntu"]) {
-						        sshPut remote: remote, from: '/home/ubuntu/docker_images/app.tar', into: '/home/ubuntu/docker_images/'
-						    }
-					    }
-					}
-				}
-			    
-			}
-			
-		}*/
-
-		
-
-		/*stage ("Copy image to remote server") {
-			steps {
-			    //sh "scp -r ~/app.tar ubuntu@52.14.77.84: /home/ubuntu/"
-				//sshPublisher(publishers: [sshPublisherDesc(configName: 'SERVER_NAME', transfers: [sshTransfer(cleanRemote: false, excludes: '', execCommand: 'apt-get update', execTimeout: 120000, flatten: false, makeEmptyDirs: false, noDefaultExcludes: false, patternSeparator: '[, ]+', remoteDirectory: '', remoteDirectorySDF: false, removePrefix: '', sourceFiles: '*.war')], usePromotionTimestamp: false, useWorkspaceInPromotion: false, verbose: false)])
-				}
-		}*/	
-			
-           
-		/*withCredentials([sshUserPrivateKey(credentialsId: 'vieskovtf', keyFileVariable: '~/.ssh/vieskovtf.pem', passphraseVariable: '', usernameVariable: 'ubuntu')]) {
-                
-            stage("SSH copy image to prod") {
-                steps{   
-                
-				    sshPut remote: remote, from: '~/app.tar', into: '~/'
-					 //writeFile file: 'abc.sh', text: 'ls'
-                    //sshCommand remote: remote, command: 'for i in {1..5}; do echo -n \"Loop \$i \"; date ; sleep 1; done'
-                    //sshGet remote: remote, from: 'abc.sh', into: 'bac.sh', override: true
-                    //sshScript remote: remote, script: 'abc.sh'
-                    //sshRemove remote: remote, path: 'abc.sh'
-				}
-            }
-        }
-			
-
-		withCredentials([sshUserPrivateKey(credentialsId: 'vieskovtf', keyFileVariable: '~/.ssh/vieskovtf.pem', passphraseVariable: '', usernameVariable: 'ubuntu')]) {
-
-            stage("Deploy - prod") {
-                steps { 
-                    sshCommand remote: remote, command: 'docker load -i ~/app.tar'
-                    sshCommand remote: remote, command: 'docker run -d -p 80:5000 randomcat:${BUILD_NUMBER}'               
-                } 
-            }
-
-		}*/
-
-        /*stage("Deploy - prod") {
-           steps { 
-				deploy('prod')  //randomcat:${BUILD_ID}
-				}
-		}*/
+               		
         
 		//Running a UAT test on a Prod server (similar to how it was done in step stage("Test - UAT Dev")) 
 		stage("Test - UAT prod") {

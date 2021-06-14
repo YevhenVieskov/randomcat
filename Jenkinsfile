@@ -129,13 +129,13 @@ pipeline {
 		}
 
         //Save image on Jenkins server       
-	    /*stage ("Save image") {
+	    stage ("Save image") {
 			steps {
 				withEnv(["HOME=/home/ubuntu"]) {
 			        sh "docker image save -o ~/docker_images/app.tar randomcat:${BUILD_NUMBER}"
 				}
 			}
-		}*/
+		}
 
 		//Clean old docker images on production server
 		

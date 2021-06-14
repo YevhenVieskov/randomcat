@@ -4,8 +4,10 @@
 def DOCKER_USER = "vieskov"
 def DOCKER_PASSWORD = "xxxx"
 def WORKSPACE = "/usr/lib/python"                            //"/var/lib/jenkins/jobs/randomcat"
-def IP_DEPLOY = "18.117.127.105"
-def IP_BUILD = "18.216.18.212"
+def IP_DEPLOY = "52.14.158.47"
+def IP_JMASTER = "18.117.238.202"
+def IP_JSLAVE = "18.117.196.122"
+def PATH_KEY ="/home/ubuntu/.ssh/vieskovtf.pem"
 /*def remote = [name:"ubuntu", host: "52.14.77.84", user: "ubuntu", identityFile: "vieskovtf.pem", allowAnyHosts: "true" ]*/
 
 pipeline {
@@ -18,6 +20,10 @@ pipeline {
 	environment {
 		PYTHONPATH = "${WORKSPACE}" // /var/lib/python "${WORKSPACE}" "${GIT_COMMIT}"
 		MY_PROD_CRED = credentials('ssh-prod')
+		registry = "vieskov1980/randomcat" 
+        registryCredential = 'ssh-dockerhub' 
+        dockerImage = '' 
+
 	}
 
 	
@@ -73,8 +79,50 @@ pipeline {
 
         //Building a Docker image with an application
         stage("Build") {
-            steps { buildApp() }
+            steps { 
+				//buildApp() 
+				script {
+					dockerImage=docker.build registry + ":$BUILD_NUMBER"
+				}
+			}
 		}
+
+		stage("Deploy image on dockerhub")
+		{
+			steps{
+				script{
+					docker.withRegistry('', registryCredential) {
+						dockerImage.push()
+					}
+				}
+			}
+		}
+
+		stage("Clean up  Jenkins server")
+		{
+			steps{
+								
+				sh "docker stop \$(docker ps -a -q) 2> /dev/null || true"
+                sh "docker rm -f \$(docker ps -a -q) 2> /dev/null || true"
+	            sh "docker rmi -f \$(docker images -a -q) 2> /dev/null || true"
+				sh "docker volume rm -f \$(docker images -a -q) 2> /dev/null || true"
+				sh "yes | docker image prune -f 2> /dev/null || true"
+				sh "yes | docker network prune -f 2> /dev/null || true"
+				sh "yes | docker volume prune -f 2> /dev/null || true"
+				sh "yes | docker system prune -f 2> /dev/null || true"
+				    //sh "ssh ubuntu@${IP_DEPLOY} service docker restart"      // 2> /dev/null || true"
+				
+			    
+			}
+			
+		}
+
+		/*stage("Cleaning up") {
+			steps {
+				sh "docker rmi $registry: $BUILD_NUMBER"
+			}
+		}*/
+
         
 		//Uploading the  image to the remote Docker repository 
 		/*stage("Push to Docker-repo") {
@@ -82,9 +130,9 @@ pipeline {
                 }*/
 
         //Deploying the application from the Docker image on the Dev server 
-		stage("Deploy - Dev") {
+		/*stage("Deploy - Dev") {
             steps { deploy('dev') }
-		}
+		}*/
 
 		//a) checking if there is already a running container with the specified name and stopping such a container, if it exists
         //b) deleting the container stopped at the previous step
@@ -99,9 +147,9 @@ pipeline {
 
 		
 		//Running UAT Test on Dev Server 		
-		stage("Test - UAT Dev") {
+		/*stage("Test - UAT Dev") {
             steps { runUAT(8888) }
-		}
+		}*/
 
 		//The script sh «tests / runUAT.sh is launched with the positional parameter $ {port}, where instead of
         //the port number is substituted with the port number according to the environment
@@ -113,59 +161,61 @@ pipeline {
 	
         //Deploying the application from the Docker image built in step stage("Build") on the Stage
 		// server (similar to how it was done in step stage("Deploy - Dev"))
-		stage("Deploy - Stage") {
+		/*stage("Deploy - Stage") {
             steps { deploy('stage') }
-		}
+		}*/
 
 
         //Running a UAT test on a Stage server (similar to how it was done in step stage("Test - UAT Dev")) 
-		stage("Test - UAT Stage") {
+		/*stage("Test - UAT Stage") {
             steps { runUAT(88) }
-		}
+		}*/
 
         //Manual confirmation of application deployment on the Prod server 
         stage("Approve") {
             steps { approve() }
 		}
 
+		//Push image on DockerHub 
+
         //Save image on Jenkins server       
-	    stage ("Save image") {
+	    /*stage ("Save image") {
 			steps {
 				withEnv(["HOME=/home/ubuntu"]) {
 			        sh "docker image save -o ~/docker_images/app.tar randomcat:${BUILD_NUMBER}"
 				}
 			}
-		}
+		}*/
 
-		//Clean old docker images on production server
-		
-		stage("Clean production server")
+
+
+		//Clean old docker images on production server		
+		stage("Clean up  production server")
 		{
 			steps{
 				//    /^randomcat:[0-9]{1,10000}$/
 				sshagent(credentials : ['ssh-prod']) {
-				    sh "ssh ubuntu@${IP_DEPLOY} docker stop \$(docker ps -a -q) 2> /dev/null || true"
-                    sh "ssh ubuntu@${IP_DEPLOY} docker rm -f \$(docker ps -a -q) 2> /dev/null || true"
-	                sh "ssh ubuntu@${IP_DEPLOY} docker rmi -f \$(docker images -a -q) 2> /dev/null || true"
-				    sh "ssh ubuntu@${IP_DEPLOY} docker volume rm -f \$(docker images -a -q) 2> /dev/null || true"
-				    sh "ssh ubuntu@${IP_DEPLOY} yes | docker image prune -f 2> /dev/null || true"
-				    sh "ssh ubuntu@${IP_DEPLOY} yes | docker network prune -f 2> /dev/null || true"
-				    sh "ssh ubuntu@${IP_DEPLOY} yes | docker volume prune -f 2> /dev/null || true"
-				    sh "ssh ubuntu@${IP_DEPLOY} yes | docker system prune -f 2> /dev/null || true"
+				    sh "ssh  ubuntu@${IP_DEPLOY} docker stop \$(docker ps -a -q) 2> /dev/null || true"
+                    sh "ssh  ubuntu@${IP_DEPLOY} docker rm -f \$(docker ps -a -q) 2> /dev/null || true"
+	                sh "ssh  ubuntu@${IP_DEPLOY} docker rmi -f \$(docker images -a -q) 2> /dev/null || true"
+				    sh "ssh  ubuntu@${IP_DEPLOY} docker volume rm -f \$(docker images -a -q) 2> /dev/null || true"
+				    sh "ssh  ubuntu@${IP_DEPLOY} yes | docker image prune -f 2> /dev/null || true"
+				    sh "ssh  ubuntu@${IP_DEPLOY} yes | docker network prune -f 2> /dev/null || true"
+				    sh "ssh  ubuntu@${IP_DEPLOY} yes | docker volume prune -f 2> /dev/null || true"
+				    sh "ssh  ubuntu@${IP_DEPLOY} yes | docker system prune -f 2> /dev/null || true"
 				    //sh "ssh ubuntu@${IP_DEPLOY} service docker restart"      // 2> /dev/null || true"
 				
 			    }
 			}
-			/*post {
-				always {
-					sh "ssh ubuntu@${IP_DEPLOY} docker-gc"
-				}			
-			}*/
+			
 		}
 
         //Deploying the application from the Docker image collected in step stage("Build") 
 		//on the Prod server (similar to how it was done in step stage("Deploy - Dev")) 
-		stage ("Deploy - prod") {
+
+       
+
+		/*stage ("Deploy - prod") {
             steps{
                 sshagent(credentials : ['ssh-prod']) {
                     
@@ -174,21 +224,26 @@ pipeline {
                 }
             }
 
-			/*post {
-				always {
-					sh "docker-gc"
-				}			
-			}*/
-        }
+			
+        }*/
 
-
+        stage("Pull image from dockerhub on prod")
+		{
+			steps{
+                sshagent(credentials : ['ssh-prod']) {
+                    
+					
+					sh " docker pull registry:${BUILD_NUMBER}"
+                }
+            }
+		}
 
 		stage ("Run - prod") {
             steps{
                 sshagent(credentials : ['ssh-prod']) {
                     
-					sh "ssh ubuntu@${IP_DEPLOY} docker load -i /home/ubuntu/docker_images/app.tar && docker run -d -p 5000:5000 randomcat:${BUILD_NUMBER}"
-					//sh "docker run -d -p 5000:5000 randomcat:${BUILD_NUMBER}"
+					//sh "ssh ubuntu@${IP_DEPLOY} docker load -i /home/ubuntu/docker_images/app.tar && docker run -d -p 5000:5000 randomcat:${BUILD_NUMBER}"
+					sh "docker run -d -p 5000:5000 registry:${BUILD_NUMBER}"
                 }
             }
         }
@@ -196,7 +251,7 @@ pipeline {
                		
         
 		//Running a UAT test on a Prod server (similar to how it was done in step stage("Test - UAT Dev")) 
-		stage("Test - UAT prod") {
+		/*stage("Test - UAT prod") {
             steps { 
 				//runUAT(80)
 				sshagent(credentials : ['ssh-prod']) { 										                 
@@ -205,7 +260,7 @@ pipeline {
 	                sh "ssh ubuntu@${IP_DEPLOY} /home/ubuntu/docker_images/runUAT.sh 80"
                 }
 			}
-		}
+		}*/
 
 	}
 }
@@ -215,7 +270,7 @@ pipeline {
 
 
 
-def pushImage(){
+/*def pushImage(){
     withCredentials([usernamePassword(credentialsId: 'docker-login-password-authentification', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASSWORD')]) 
                 {
 				 //https://mydocker.repo.servername	 https://hub.docker.com/repository/docker/vieskov1980/randomcat
@@ -223,7 +278,7 @@ def pushImage(){
                  sh "docker push vieskov1980/randomcat:${BUILD_ID}"
 				 
                 }
-}
+}*/
 
 def buildApp() {
 	//dir ('randomcat' ) {

@@ -27,7 +27,7 @@ pipeline {
 		//Download code from the repository
 		stage("Checkout") {			 
             steps {
-                git credentialsId: 'github-ssh-key-micro', url: 'https://github.com/YevhenVieskov/randomcat.git', branch: 'main' 
+                git credentialsId: 'cred-to-github', url: 'https://github.com/YevhenVieskov/randomcat.git', branch: 'main' 
             }
 	    } 
 		

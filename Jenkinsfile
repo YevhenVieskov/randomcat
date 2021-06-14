@@ -27,7 +27,7 @@ pipeline {
 		//Download code from the repository
 		stage("Checkout") {			 
             steps {
-                git credentialsId: 'cred-to-github', url: 'https://github.com/YevhenVieskov/randomcat.git', branch: 'main' 
+                git credentialsId: 'github-ssh-key', url: 'https://github.com/YevhenVieskov/randomcat.git', branch: 'main' 
             }
 	    } 
 		
@@ -129,13 +129,13 @@ pipeline {
 		}
 
         //Save image on Jenkins server       
-	    stage ("Save image") {
+	    /*stage ("Save image") {
 			steps {
 				withEnv(["HOME=/home/ubuntu"]) {
 			        sh "docker image save -o ~/docker_images/app.tar randomcat:${BUILD_NUMBER}"
 				}
 			}
-		}
+		}*/
 
 		//Clean old docker images on production server
 		
@@ -169,7 +169,8 @@ pipeline {
             steps{
                 sshagent(credentials : ['ssh-prod']) {
                     
-					sh "scp -v  /home/ubuntu/docker_images/app.tar ubuntu@${IP_DEPLOY}:/home/ubuntu/docker_images/"
+					//sh "scp -v  /home/ubuntu/docker_images/app.tar ubuntu@${IP_DEPLOY}:/home/ubuntu/docker_images/"
+					sh"docker save randomcat:${BUILD_NUMBER} | bzip2 | pv | \ ssh ubuntu@${IP_DEPLOY} bunzip2 | docker load"
                 }
             }
 
@@ -186,7 +187,8 @@ pipeline {
             steps{
                 sshagent(credentials : ['ssh-prod']) {
                     
-					sh "ssh ubuntu@${IP_DEPLOY} docker load -i /home/ubuntu/docker_images/app.tar && docker run -d -p 5000:5000 randomcat:${BUILD_NUMBER}"
+					//sh "ssh ubuntu@${IP_DEPLOY} docker load -i /home/ubuntu/docker_images/app.tar && docker run -d -p 5000:5000 randomcat:${BUILD_NUMBER}"
+					sh "docker run -d -p 5000:5000 randomcat:${BUILD_NUMBER}"
                 }
             }
         }

@@ -5,6 +5,7 @@ def DOCKER_USER = "vieskov"
 def DOCKER_PASSWORD = "xxxx"
 def WORKSPACE = "/usr/lib/python"                            //"/var/lib/jenkins/jobs/randomcat"
 def IP_DEPLOY = "18.117.127.105"
+def IP_BUILD = "18.216.18.212"
 /*def remote = [name:"ubuntu", host: "52.14.77.84", user: "ubuntu", identityFile: "vieskovtf.pem", allowAnyHosts: "true" ]*/
 
 pipeline {
@@ -155,11 +156,11 @@ pipeline {
 				
 			    }
 			}
-			post {
+			/*post {
 				always {
 					sh "ssh ubuntu@${IP_DEPLOY} docker-gc"
 				}			
-			}
+			}*/
 		}
 
         //Deploying the application from the Docker image collected in step stage("Build") 
@@ -172,11 +173,11 @@ pipeline {
                 }
             }
 
-			post {
+			/*post {
 				always {
 					sh "docker-gc"
 				}			
-			}
+			}*/
         }
 
 

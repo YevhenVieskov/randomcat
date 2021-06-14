@@ -4,7 +4,7 @@
 def DOCKER_USER = "vieskov"
 def DOCKER_PASSWORD = "xxxx"
 def WORKSPACE = "/usr/lib/python"                            //"/var/lib/jenkins/jobs/randomcat"
-def IP_DEPLOY = "13.59.128.184"
+def IP_DEPLOY = "18.117.127.105"
 /*def remote = [name:"ubuntu", host: "52.14.77.84", user: "ubuntu", identityFile: "vieskovtf.pem", allowAnyHosts: "true" ]*/
 
 pipeline {
@@ -127,9 +127,7 @@ pipeline {
             steps { approve() }
 		}
 
-        //Deploying the application from the Docker image collected in step stage("Build") 
-		//on the Prod server (similar to how it was done in step stage("Deploy - Dev")) 
-       
+        //Save image on Jenkins server       
 	    stage ("Save image") {
 			steps {
 				withEnv(["HOME=/home/ubuntu"]) {
@@ -138,6 +136,7 @@ pipeline {
 			}
 		}
 
+		//Clean old docker images on production server
 		
 		stage("Clean production server")
 		{
@@ -162,6 +161,8 @@ pipeline {
 			}
 		}
 
+        //Deploying the application from the Docker image collected in step stage("Build") 
+		//on the Prod server (similar to how it was done in step stage("Deploy - Dev")) 
 		stage ("Deploy - prod") {
             steps{
                 sshagent(credentials : ['ssh-prod']) {

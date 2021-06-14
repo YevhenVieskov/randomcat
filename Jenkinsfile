@@ -31,7 +31,7 @@ pipeline {
             }
 	    } 
 		
-		stage("Test - Unit tests") {
+		stage("Build Image - Unit tests") {
 			agent { docker { image 'python:3.5-alpine' } }
 			stages{
 				stage("Build Python image"){
@@ -152,7 +152,7 @@ pipeline {
 				    sh "ssh ubuntu@${IP_DEPLOY} yes | docker network prune -f 2> /dev/null || true"
 				    sh "ssh ubuntu@${IP_DEPLOY} yes | docker volume prune -f 2> /dev/null || true"
 				    sh "ssh ubuntu@${IP_DEPLOY} yes | docker system prune -f 2> /dev/null || true"
-				    sh "ssh ubuntu@${IP_DEPLOY} service docker restart"      // 2> /dev/null || true"
+				    //sh "ssh ubuntu@${IP_DEPLOY} service docker restart"      // 2> /dev/null || true"
 				
 			    }
 			}

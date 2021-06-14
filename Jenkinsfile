@@ -169,8 +169,8 @@ pipeline {
             steps{
                 sshagent(credentials : ['ssh-prod']) {
                     
-					//sh "scp -v  /home/ubuntu/docker_images/app.tar ubuntu@${IP_DEPLOY}:/home/ubuntu/docker_images/"
-					sh"docker save randomcat:${BUILD_NUMBER} | bzip2 | pv | \ ssh ubuntu@${IP_DEPLOY} bunzip2 | docker load"
+					sh "scp -v  /home/ubuntu/docker_images/app.tar ubuntu@${IP_DEPLOY}:/home/ubuntu/docker_images/"
+					//sh"docker save randomcat:${BUILD_NUMBER} | bzip2 | pv | \ ssh ubuntu@${IP_DEPLOY} bunzip2 | docker load"
                 }
             }
 
@@ -187,8 +187,8 @@ pipeline {
             steps{
                 sshagent(credentials : ['ssh-prod']) {
                     
-					//sh "ssh ubuntu@${IP_DEPLOY} docker load -i /home/ubuntu/docker_images/app.tar && docker run -d -p 5000:5000 randomcat:${BUILD_NUMBER}"
-					sh "docker run -d -p 5000:5000 randomcat:${BUILD_NUMBER}"
+					sh "ssh ubuntu@${IP_DEPLOY} docker load -i /home/ubuntu/docker_images/app.tar && docker run -d -p 5000:5000 randomcat:${BUILD_NUMBER}"
+					//sh "docker run -d -p 5000:5000 randomcat:${BUILD_NUMBER}"
                 }
             }
         }

@@ -153,6 +153,7 @@ pipeline {
 				    sh "ssh ubuntu@${IP_DEPLOY} yes | docker system prune -f 2> /dev/null || true"
 				    sh "ssh ubuntu@${IP_DEPLOY} service docker restart"      // 2> /dev/null || true"
 				
+			    }
 			}
 			post {
 				always {

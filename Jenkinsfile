@@ -255,8 +255,8 @@ pipeline {
                 sshagent(credentials : ['ssh-prod']) {
                     
 					
-					//sh "ssh -i ${PATH_KEY} ubuntu@${IP_DEPLOY}  docker pull ${registry}:${BUILD_NUMBER}"
-					sh "ssh  ubuntu@${IP_DEPLOY}  docker pull ${registry}:${BUILD_NUMBER}"
+					sh "ssh -i ${PATH_KEY} ubuntu@${IP_DEPLOY}  docker pull ${registry}:${BUILD_NUMBER}"
+					//sh "ssh  ubuntu@${IP_DEPLOY}  docker pull ${registry}:${BUILD_NUMBER}"
                 }
             }
 		}

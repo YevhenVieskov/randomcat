@@ -249,7 +249,7 @@ pipeline {
 			
         }*/
 
-        stage("Pull image from dockerhub on prod")
+       /* stage("Pull image from dockerhub on prod")
 		{
 			steps{
                 sshagent(credentials : ['ssh-prod']) {
@@ -258,9 +258,9 @@ pipeline {
 					sh " docker pull ${registry}:${BUILD_NUMBER}"
                 }
             }
-		}
+		}*/
 
-		stage ("Run - prod") {
+		/*stage ("Run - prod") {
             steps{
                 sshagent(credentials : ['ssh-prod']) {
                     
@@ -268,7 +268,7 @@ pipeline {
 					sh "docker run -d -p 5000:5000 ${registry}:${BUILD_NUMBER}"
                 }
             }
-        }
+        }*/
 
                		
         

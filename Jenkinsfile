@@ -255,7 +255,8 @@ pipeline {
                 sshagent(credentials : ['ssh-prod']) {
                     
 					
-					sh "ssh -i ${PATH_KEY} ubuntu@${IP_DEPLOY}  docker pull ${registry}:${BUILD_NUMBER}"
+					//sh "ssh -i ${PATH_KEY} ubuntu@${IP_DEPLOY}  docker pull ${registry}:${BUILD_NUMBER}"
+					sh "ssh  ubuntu@${IP_DEPLOY}  docker pull ${registry}:${BUILD_NUMBER}"
                 }
             }
 		}
@@ -266,6 +267,7 @@ pipeline {
                     
 					//sh "ssh ubuntu@${IP_DEPLOY} docker load -i /home/ubuntu/docker_images/app.tar && docker run -d -p 5000:5000 randomcat:${BUILD_NUMBER}"
 					sh "ssh -i ${PATH_KEY} ubuntu@${IP_DEPLOY}  docker run -d -p 5000:5000 ${registry}:${BUILD_NUMBER}"
+					//sh "ssh -i ${PATH_KEY} ubuntu@${IP_DEPLOY}  docker run -d -p 5000:5000 ${registry}:${BUILD_NUMBER}"
                 }
             }
         }

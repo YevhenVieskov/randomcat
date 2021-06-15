@@ -117,7 +117,7 @@ pipeline {
 			
 		}
 
-		stage("Clean up  production server")
+		stage("Clean up  Jenkins slave")
 		{
 			steps{
 				//    /^randomcat:[0-9]{1,10000}$/
@@ -249,26 +249,26 @@ pipeline {
 			
         }*/
 
-       /* stage("Pull image from dockerhub on prod")
+       stage("Pull image from dockerhub on prod")
 		{
 			steps{
                 sshagent(credentials : ['ssh-prod']) {
                     
 					
-					sh " docker pull ${registry}:${BUILD_NUMBER}"
+					sh "ssh  ubuntu@${IP_DEPLOY}  docker pull ${registry}:${BUILD_NUMBER}"
                 }
             }
-		}*/
+		}
 
-		/*stage ("Run - prod") {
+		stage ("Run - prod") {
             steps{
                 sshagent(credentials : ['ssh-prod']) {
                     
 					//sh "ssh ubuntu@${IP_DEPLOY} docker load -i /home/ubuntu/docker_images/app.tar && docker run -d -p 5000:5000 randomcat:${BUILD_NUMBER}"
-					sh "docker run -d -p 5000:5000 ${registry}:${BUILD_NUMBER}"
+					sh "ssh  ubuntu@${IP_DEPLOY}  docker run -d -p 5000:5000 ${registry}:${BUILD_NUMBER}"
                 }
             }
-        }*/
+        }
 
                		
         

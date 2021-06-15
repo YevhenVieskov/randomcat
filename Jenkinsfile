@@ -118,10 +118,10 @@ pipeline {
 				//    /^randomcat:[0-9]{1,10000}$/
 				sshagent(credentials : ['ssh-prod']) {
 					sh  '''#!/bin/bash					       
-						   ssh -o "StrictHostKeyChecking=no" ubuntu@${IP_JSLAVE} 'docker stop $(docker ps -a -q) 2> /dev/null || true'
-                           ssh -o "StrictHostKeyChecking=no" ubuntu@${IP_JSLAVE} 'docker rm -f $(docker ps -a -q) 2> /dev/null || true'
-	                       ssh -o "StrictHostKeyChecking=no" ubuntu@${IP_JSLAVE} 'docker rmi -f $(docker images -a -q) 2> /dev/null || true'				    
-				           ssh -o "StrictHostKeyChecking=no" ubuntu@${IP_JSLAVE} 'yes | docker system prune -f 2> /dev/null || true'				                   
+						   ssh -o "StrictHostKeyChecking=no" ubuntu@"${IP_JSLAVE}" 'docker stop $(docker ps -a -q) 2> /dev/null || true'
+                           ssh -o "StrictHostKeyChecking=no" ubuntu@"${IP_JSLAVE}" 'docker rm -f $(docker ps -a -q) 2> /dev/null || true'
+	                       ssh -o "StrictHostKeyChecking=no" ubuntu@"${IP_JSLAVE}" 'docker rmi -f $(docker images -a -q) 2> /dev/null || true'				    
+				           ssh -o "StrictHostKeyChecking=no" ubuntu@"${IP_JSLAVE}" 'yes | docker system prune -f 2> /dev/null || true'				                   
 				           
 				        '''	
 				

@@ -192,7 +192,7 @@ pipeline {
 				//    /^randomcat:[0-9]{1,10000}$/
 				sshagent(credentials : ['ssh-prod']) {
 					sh  '''#!/bin/bash					                   
-				           ssh -o StrictHostKeyChecking=no ubuntu@${IP_DEPLOY} 'docker stop $(docker ps -a -q)' 2> /dev/null || true
+				           ssh -o "StrictHostKeyChecking=no" ubuntu@${IP_DEPLOY} 'docker stop $(docker ps -a -q) 2> /dev/null || true'
                            
 				        '''	
 				

@@ -274,17 +274,16 @@ pipeline {
 					//sh "ssh -i ${PATH_KEY} ubuntu@${IP_DEPLOY}  docker run -d -p 5000:5000 ${registry}:${BUILD_NUMBER}"
 					sh "ssh -o StrictHostKeyChecking=no ubuntu@${IP_DEPLOY} uptime"
                     sh "ssh -v ubuntu@${IP_DEPLOY}"
-					sh "ssh ubuntu@${IP_DEPLOY} docker stop \$(docker ps -a -q) 2> /dev/null || true"
-					sh "ssh ubuntu@${IP_DEPLOY} yes | docker system prune -f 2> /dev/null || true"
-					sh "ssh  ubuntu@${IP_DEPLOY}  docker run -d -p 5000:5000 ${registry}:${BUILD_NUMBER}"
+					
+					//sh "ssh  ubuntu@${IP_DEPLOY}  docker run -d -p 5000:5000 ${registry}:${BUILD_NUMBER}"
 					//sh "ssh  ubuntu@${IP_DEPLOY}  docker run --rm -it --network=host -p 5000:5000 ${registry}:${BUILD_NUMBER}"
-					//sh "ssh  ubuntu@${IP_DEPLOY}  docker run --rm -it --network=host -d -p 5000:5000 ${registry}:${BUILD_NUMBER}"
+					sh "ssh  ubuntu@${IP_DEPLOY}  docker run --rm  --network=host -d -p 5000:5000 ${registry}:${BUILD_NUMBER}"
                 }
             }
         }
     
 
-	    stage("Approve stop application and cleanup prod") {
+	   /* stage("Approve stop application and cleanup prod") {
             steps { approve() }
 		}
 
@@ -303,7 +302,7 @@ pipeline {
 			    }
 			}
 			
-		}
+		}*/
                		
         
 		//Running a UAT test on a Prod server (similar to how it was done in step stage("Test - UAT Dev")) 

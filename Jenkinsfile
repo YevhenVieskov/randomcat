@@ -256,6 +256,8 @@ pipeline {
                     
 					
 					//sh "ssh -i ${PATH_KEY} ubuntu@${IP_DEPLOY}  docker pull ${registry}:${BUILD_NUMBER}"
+					sh "ssh -o StrictHostKeyChecking=no ubuntu@${IP_DEPLOY} uptime"
+                    sh "ssh -v ubuntu@${IP_DEPLOY}"
 					sh "ssh  ubuntu@${IP_DEPLOY}  docker pull ${registry}:${BUILD_NUMBER}"
                 }
             }

@@ -110,8 +110,7 @@ pipeline {
 				sh "yes | docker network prune -f 2> /dev/null || true"
 				sh "yes | docker volume prune -f 2> /dev/null || true"
 				sh "yes | docker system prune -f 2> /dev/null || true"
-				//sh "ssh  ubuntu@${IP_JSLAVE} yes | docker builder prune -a -f 2> /dev/null || true"
-				//sh "ssh ubuntu@${IP_DEPLOY} service docker restart"      // 2> /dev/null || true"
+				    //sh "ssh ubuntu@${IP_DEPLOY} service docker restart"      // 2> /dev/null || true"
 				
 			    
 			}
@@ -133,7 +132,6 @@ pipeline {
 				    sh "ssh  ubuntu@${IP_JSLAVE} yes | docker network prune -f 2> /dev/null || true"
 				    sh "ssh  ubuntu@${IP_JSLAVE} yes | docker volume prune -f 2> /dev/null || true"
 				    sh "ssh  ubuntu@${IP_JSLAVE} yes | docker system prune -f 2> /dev/null || true"
-					//sh "ssh  ubuntu@${IP_JSLAVE} yes | docker builder prune -a -f 2> /dev/null || true"
 				    //sh "ssh ubuntu@${IP_DEPLOY} service docker restart"      // 2> /dev/null || true"
 				
 			    }
@@ -141,13 +139,80 @@ pipeline {
 			
 		}
 
-       
+
+
+		/*stage("Cleaning up") {
+			steps {
+				sh "docker rmi $registry: $BUILD_NUMBER"
+			}
+		}*/
+
+        
+		//Uploading the  image to the remote Docker repository 
+		/*stage("Push to Docker-repo") {
+            steps { pushImage() }
+                }*/
+
+        //Deploying the application from the Docker image on the Dev server 
+		/*stage("Deploy - Dev") {
+            steps { deploy('dev') }
+		}*/
+
+		//a) checking if there is already a running container with the specified name and stopping such a container, if it exists
+        //b) deleting the container stopped at the previous step
+        //c) launching a container based on the image collected in step stage("Build")
+
+        //The name of the container and the port number that is exposed outside (opens for listening on the docker host) depends on the environment
+        //Environment: container name, port 
+
+		//Dev: app_dev, 8085
+        //Stage:  app_stage, 8086
+        //Prod: app_prod, 8087
+
 		
+		//Running UAT Test on Dev Server 		
+		/*stage("Test - UAT Dev") {
+            steps { runUAT(8888) }
+		}*/
+
+		//The script sh «tests / runUAT.sh is launched with the positional parameter $ {port}, where instead of
+        //the port number is substituted with the port number according to the environment
+
+        
+		//Deploying the application from the Docker image built in step stage("Build") on the Stage server
+		//(similar to how it was done in step  	stage("Deploy - Dev")
+
+	
+        //Deploying the application from the Docker image built in step stage("Build") on the Stage
+		// server (similar to how it was done in step stage("Deploy - Dev"))
+		/*stage("Deploy - Stage") {
+            steps { deploy('stage') }
+		}*/
+
+
+        //Running a UAT test on a Stage server (similar to how it was done in step stage("Test - UAT Dev")) 
+		/*stage("Test - UAT Stage") {
+            steps { runUAT(88) }
+		}*/
+
+        //Manual confirmation of application deployment on the Prod server 
         stage("Approve") {
             steps { approve('Do you want to deploy to production?') }
 		}
 
-		
+		//Push image on DockerHub 
+
+        //Save image on Jenkins server       
+	    /*stage ("Save image") {
+			steps {
+				withEnv(["HOME=/home/ubuntu"]) {
+			        sh "docker image save -o ~/docker_images/app.tar randomcat:${BUILD_NUMBER}"
+				}
+			}
+		}*/
+
+
+
 		//Clean old docker images on production server		
 		stage("Clean up  production server")
 		{
@@ -171,7 +236,22 @@ pipeline {
 			
 		}
 
-        
+        //Deploying the application from the Docker image collected in step stage("Build") 
+		//on the Prod server (similar to how it was done in step stage("Deploy - Dev")) 
+
+       
+
+		/*stage ("Deploy - prod") {
+            steps{
+                sshagent(credentials : ['ssh-prod']) {
+                    
+					sh "scp -v  /home/ubuntu/docker_images/app.tar ubuntu@${IP_DEPLOY}:/home/ubuntu/docker_images/"
+					//sh"docker save randomcat:${BUILD_NUMBER} | bzip2 | pv | \ ssh ubuntu@${IP_DEPLOY} bunzip2 | docker load"
+                }
+            }
+
+			
+        }*/
 
        stage("Pull image from dockerhub on prod")
 		{
@@ -188,12 +268,16 @@ pipeline {
 
 		stage ("Run - prod") {
             steps{
-                sshagent(credentials : ['ssh-prod']) {                    
-					
+                sshagent(credentials : ['ssh-prod']) {
+                    
+					//sh "ssh ubuntu@${IP_DEPLOY} docker load -i /home/ubuntu/docker_images/app.tar && docker run -d -p 5000:5000 randomcat:${BUILD_NUMBER}"
+					//sh "ssh -i ${PATH_KEY} ubuntu@${IP_DEPLOY}  docker run -d -p 5000:5000 ${registry}:${BUILD_NUMBER}"
 					sh "ssh -o StrictHostKeyChecking=no ubuntu@${IP_DEPLOY} uptime"
-                    sh "ssh -v ubuntu@${IP_DEPLOY}"					
-					sh "ssh  ubuntu@${IP_DEPLOY}  docker run -d -p 8080:5000 ${registry}:${BUILD_NUMBER}"
+                    sh "ssh -v ubuntu@${IP_DEPLOY}"
 					
+					sh "ssh  ubuntu@${IP_DEPLOY}  docker run -d -p 8080:5000 ${registry}:${BUILD_NUMBER}"
+					//sh "ssh  ubuntu@${IP_DEPLOY}  docker run --rm -it --network=host -p 5000:5000 ${registry}:${BUILD_NUMBER}"
+					//sh "ssh  ubuntu@${IP_DEPLOY}  docker run --rm  --network=bridge -d -p 5000:5000 ${registry}:${BUILD_NUMBER}"
                 }
             }
         }
@@ -219,14 +303,73 @@ pipeline {
 			}
 			
 		}
- 
+               		
+        
+		//Running a UAT test on a Prod server (similar to how it was done in step stage("Test - UAT Dev")) 
+		/*stage("Test - UAT prod") {
+            steps { 
+				//runUAT(80)
+				sshagent(credentials : ['ssh-prod']) { 										                 
+					sh "scp -v  ~/tests/runUAT.sh ubuntu@13.59.128.184:/home/ubuntu/docker_images/"
+					sh "ssh ubuntu@${IP_DEPLOY} chmod +x -R /home/ubuntu/docker_images/runUAT.sh"
+	                sh "ssh ubuntu@${IP_DEPLOY} /home/ubuntu/docker_images/runUAT.sh 80"
+                }
+			}
+		}*/
+
 	}
 }
 
 
+// steps
+
+
+
+/*def pushImage(){
+    withCredentials([usernamePassword(credentialsId: 'docker-login-password-authentification', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASSWORD')]) 
+                {
+				 //https://mydocker.repo.servername	 https://hub.docker.com/repository/docker/vieskov1980/randomcat
+                 sh "docker login --username ${DOCKER_USER} --password ${DOCKER_PASSWORD}"
+                 sh "docker push vieskov1980/randomcat:${BUILD_ID}"
+				 
+                }
+}*/
+
 def buildApp() {
-	
+	//dir ('randomcat' ) {
+		//def appImage = docker.build("mydocker.repo.servername/myapp:${BUILD_NUMBER}")
+	//	def appImage = docker.build("randomcat:${BUILD_NUMBER}")
+	//}
 	sh"docker build -t randomcat:${BUILD_NUMBER} ."
+}
+
+
+def deploy(environment) {
+
+	def containerName = ''
+	def port = ''
+
+	if ("${environment}" == 'dev') {
+		containerName = "app_dev"
+		port = "8888"
+	} 
+	else if ("${environment}" == 'stage') {
+		containerName = "app_stage"
+		port = "88"
+	}
+	else if ("${environment}" == 'prod') {
+		containerName = "app__prod"
+		port = "80"
+	}
+	else {
+		println "Environment not valid"
+		System.exit(0)
+	}
+
+	sh "docker ps -f name=${containerName} -q | xargs --no-run-if-empty docker stop"
+	sh "docker ps -a -f name=${containerName} -q | xargs -r docker rm"
+	sh "docker run -d -p ${port}:5000 --name ${containerName} randomcat:${BUILD_ID}"
+
 }
 
 
@@ -235,6 +378,7 @@ def approve(msg) {
 	timeout(time:1, unit:'DAYS') {
 		input(msg)     //'Do you want to deploy to production?'
 	}
+
 }
 
 

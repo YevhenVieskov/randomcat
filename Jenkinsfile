@@ -228,7 +228,7 @@ def runUnittests() {
 	sh "./tests/runUT.sh"
 }
 
-
+//accessibility test
 def runUAT(port) {
 	sh "chmod +x -R ${env.WORKSPACE}"
 	sh "./tests/runUAT.sh ${port}"

@@ -117,6 +117,28 @@ pipeline {
 			
 		}
 
+		stage("Clean up  production server")
+		{
+			steps{
+				//    /^randomcat:[0-9]{1,10000}$/
+				sshagent(credentials : ['ssh-prod']) {
+				    sh "ssh  ubuntu@${IP_JSLAVE} docker stop \$(docker ps -a -q) 2> /dev/null || true"
+                    sh "ssh  ubuntu@${IP_JSLAVE} docker rm -f \$(docker ps -a -q) 2> /dev/null || true"
+	                sh "ssh  ubuntu@${IP_JSLAVE} docker rmi -f \$(docker images -a -q) 2> /dev/null || true"
+				    sh "ssh  ubuntu@${IP_JSLAVE} docker volume rm -f \$(docker images -a -q) 2> /dev/null || true"
+				    sh "ssh  ubuntu@${IP_JSLAVE} yes | docker image prune -f 2> /dev/null || true"
+				    sh "ssh  ubuntu@${IP_JSLAVE} yes | docker network prune -f 2> /dev/null || true"
+				    sh "ssh  ubuntu@${IP_JSLAVE} yes | docker volume prune -f 2> /dev/null || true"
+				    sh "ssh  ubuntu@${IP_JSLAVE} yes | docker system prune -f 2> /dev/null || true"
+				    //sh "ssh ubuntu@${IP_DEPLOY} service docker restart"      // 2> /dev/null || true"
+				
+			    }
+			}
+			
+		}
+
+
+
 		/*stage("Cleaning up") {
 			steps {
 				sh "docker rmi $registry: $BUILD_NUMBER"
@@ -233,7 +255,7 @@ pipeline {
                 sshagent(credentials : ['ssh-prod']) {
                     
 					
-					sh " docker pull registry:${BUILD_NUMBER}"
+					sh " docker pull ${registry}:${BUILD_NUMBER}"
                 }
             }
 		}
@@ -243,7 +265,7 @@ pipeline {
                 sshagent(credentials : ['ssh-prod']) {
                     
 					//sh "ssh ubuntu@${IP_DEPLOY} docker load -i /home/ubuntu/docker_images/app.tar && docker run -d -p 5000:5000 randomcat:${BUILD_NUMBER}"
-					sh "docker run -d -p 5000:5000 registry:${BUILD_NUMBER}"
+					sh "docker run -d -p 5000:5000 ${registry}:${BUILD_NUMBER}"
                 }
             }
         }

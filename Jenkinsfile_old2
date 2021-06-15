@@ -101,13 +101,19 @@ pipeline {
 		stage("Clean up  Jenkins server")
 		{
 			steps{
-				sh  '''#!/bin/bash
-				       docker stop $(docker ps -a -q) 2> /dev/null || true
-					   docker rm -f $(docker ps -a -q) 2> /dev/null || true"
-					   docker rmi -f $(docker images -a -q) 2> /dev/null || true
-					   yes | docker system prune -f 2> /dev/null || true
-					'''				
-
+								
+				sh "docker stop \$(docker ps -a -q) 2> /dev/null || true"
+                sh "docker rm -f \$(docker ps -a -q) 2> /dev/null || true"
+	            sh "docker rmi -f \$(docker images -a -q) 2> /dev/null || true"
+				sh "docker volume rm -f \$(docker images -a -q) 2> /dev/null || true"
+				sh "yes | docker image prune -f 2> /dev/null || true"
+				sh "yes | docker network prune -f 2> /dev/null || true"
+				sh "yes | docker volume prune -f 2> /dev/null || true"
+				sh "yes | docker system prune -f 2> /dev/null || true"
+				//sh "ssh  ubuntu@${IP_JSLAVE} yes | docker builder prune -a -f 2> /dev/null || true"
+				//sh "ssh ubuntu@${IP_DEPLOY} service docker restart"      // 2> /dev/null || true"
+				
+			    
 			}
 			
 		}
@@ -117,12 +123,18 @@ pipeline {
 			steps{
 				//    /^randomcat:[0-9]{1,10000}$/
 				sshagent(credentials : ['ssh-prod']) {
-					sh  '''#!/bin/bash					                   
-				           ssh -o StrictHostKeyChecking=no ubuntu@${IP_JSLAVE} docker stop $(docker ps -a -q) 2> /dev/null || true
-                           ssh -o StrictHostKeyChecking=no ubuntu@${IP_JSLAVE} docker rm -f $(docker ps -a -q) 2> /dev/null || true
-	                       ssh -o StrictHostKeyChecking=no ubuntu@${IP_JSLAVE} docker rmi -f $(docker images -a -q) 2> /dev/null || true				    
-				           ssh -o StrictHostKeyChecking=no ubuntu@${IP_JSLAVE} yes | docker system prune -f 2> /dev/null || true
-				        '''	
+					sh "ssh -o StrictHostKeyChecking=no ubuntu@${IP_DEPLOY} uptime"
+                    sh "ssh -v ubuntu@${IP_DEPLOY}"
+				    sh "ssh  ubuntu@${IP_JSLAVE} docker stop \$(docker ps -a -q) 2> /dev/null || true"
+                    sh "ssh  ubuntu@${IP_JSLAVE} docker rm -f \$(docker ps -a -q) 2> /dev/null || true"
+	                sh "ssh  ubuntu@${IP_JSLAVE} docker rmi -f \$(docker images -a -q) 2> /dev/null || true"
+				    sh "ssh  ubuntu@${IP_JSLAVE} docker volume rm -f \$(docker images -a -q) 2> /dev/null || true"
+				    sh "ssh  ubuntu@${IP_JSLAVE} yes | docker image prune -f 2> /dev/null || true"
+				    sh "ssh  ubuntu@${IP_JSLAVE} yes | docker network prune -f 2> /dev/null || true"
+				    sh "ssh  ubuntu@${IP_JSLAVE} yes | docker volume prune -f 2> /dev/null || true"
+				    sh "ssh  ubuntu@${IP_JSLAVE} yes | docker system prune -f 2> /dev/null || true"
+					//sh "ssh  ubuntu@${IP_JSLAVE} yes | docker builder prune -a -f 2> /dev/null || true"
+				    //sh "ssh ubuntu@${IP_DEPLOY} service docker restart"      // 2> /dev/null || true"
 				
 			    }
 			}
@@ -142,12 +154,17 @@ pipeline {
 			steps{
 				//    /^randomcat:[0-9]{1,10000}$/
 				sshagent(credentials : ['ssh-prod']) {
-					sh  '''#!/bin/bash					                   
-				           ssh -o StrictHostKeyChecking=no ubuntu@${IP_DEPLOY} docker stop $(docker ps -a -q) 2> /dev/null || true
-                           ssh -o StrictHostKeyChecking=no ubuntu@${IP_DEPLOY} docker rm -f $(docker ps -a -q) 2> /dev/null || true
-	                       ssh -o StrictHostKeyChecking=no ubuntu@${IP_DEPLOY} docker rmi -f $(docker images -a -q) 2> /dev/null || true				    
-				           ssh -o StrictHostKeyChecking=no ubuntu@${IP_DEPLOY} yes | docker system prune -f 2> /dev/null || true
-				        '''	
+					sh "ssh -o StrictHostKeyChecking=no ubuntu@${IP_DEPLOY} uptime"
+                    sh "ssh -v ubuntu@${IP_DEPLOY}"
+				    sh "ssh ubuntu@${IP_DEPLOY} docker stop \$(docker ps -a -q) 2> /dev/null || true"
+                    sh "ssh ubuntu@${IP_DEPLOY} docker rm -f \$(docker ps -a -q) 2> /dev/null || true"
+	                sh "ssh ubuntu@${IP_DEPLOY} docker rmi -f \$(docker images -a -q) 2> /dev/null || true"
+				    sh "ssh ubuntu@${IP_DEPLOY} docker volume rm -f \$(docker images -a -q) 2> /dev/null || true"
+				    sh "ssh ubuntu@${IP_DEPLOY} yes | docker image prune -f 2> /dev/null || true"
+				    sh "ssh ubuntu@${IP_DEPLOY} yes | docker network prune -f 2> /dev/null || true"
+				    sh "ssh ubuntu@${IP_DEPLOY} yes | docker volume prune -f 2> /dev/null || true"
+				    sh "ssh ubuntu@${IP_DEPLOY} yes | docker system prune -f 2> /dev/null || true"
+				    //sh "ssh ubuntu@${IP_DEPLOY} service docker restart"      // 2> /dev/null || true"
 				
 			    }
 			}
@@ -191,12 +208,12 @@ pipeline {
 			steps{
 				//    /^randomcat:[0-9]{1,10000}$/
 				sshagent(credentials : ['ssh-prod']) {
-					sh  '''#!/bin/bash					                   
-				           ssh -o StrictHostKeyChecking=no ubuntu@${IP_DEPLOY} docker stop $(docker ps -a -q) 2> /dev/null || true
-                           ssh -o StrictHostKeyChecking=no ubuntu@${IP_DEPLOY} docker rm -f $(docker ps -a -q) 2> /dev/null || true
-	                       ssh -o StrictHostKeyChecking=no ubuntu@${IP_DEPLOY} docker rmi -f $(docker images -a -q) 2> /dev/null || true				    
-				           ssh -o StrictHostKeyChecking=no ubuntu@${IP_DEPLOY} yes | docker system prune -f 2> /dev/null || true
-				        '''	
+					sh "ssh -o StrictHostKeyChecking=no ubuntu@${IP_DEPLOY} uptime"
+                    sh "ssh -v ubuntu@${IP_DEPLOY}"
+				    sh "ssh ubuntu@${IP_DEPLOY} docker stop \$(docker ps -a -q) 2> /dev/null || true"
+                    
+				    sh "ssh ubuntu@${IP_DEPLOY} yes | docker system prune -f 2> /dev/null || true"
+				    //sh "ssh ubuntu@${IP_DEPLOY} service docker restart"      // 2> /dev/null || true"
 				
 			    }
 			}

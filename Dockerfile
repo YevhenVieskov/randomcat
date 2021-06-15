@@ -18,7 +18,7 @@ COPY templates/index.html /usr/src/app/templates/
 # tell the port number the container should expose
 EXPOSE 5000
 
-ENTRYPOINT [ “python” ]
+ENTRYPOINT [ "python" ]
 
 # run the application
 CMD ["python", "/usr/src/app/app.py"]

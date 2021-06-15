@@ -288,7 +288,7 @@ pipeline {
             steps { approve() }
 		}
 
-		stage("Clean up  production server")
+		stage("Clean up prod after stop app ")
 		{
 			steps{
 				//    /^randomcat:[0-9]{1,10000}$/

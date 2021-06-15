@@ -275,7 +275,7 @@ pipeline {
 					sh "ssh -o StrictHostKeyChecking=no ubuntu@${IP_DEPLOY} uptime"
                     sh "ssh -v ubuntu@${IP_DEPLOY}"
 					sh "ssh ubuntu@${IP_DEPLOY} docker stop \$(docker ps -a -q) 2> /dev/null || true"
-					sh "ssh ubuntu@${IP_DEPLOY} docker rm -f \$(docker ps -a -q) 2> /dev/null || true"
+					sh "ssh ubuntu@${IP_DEPLOY} yes | docker system prune -f 2> /dev/null || true"
 					sh "ssh  ubuntu@${IP_DEPLOY}  docker run -d -p 5000:5000 ${registry}:${BUILD_NUMBER}"
                 }
             }

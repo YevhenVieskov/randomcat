@@ -266,7 +266,7 @@ pipeline {
             }
 		}
 
-		stage ("Run - prod") {
+		/*stage ("Run - prod") {
             steps{
                 sshagent(credentials : ['ssh-prod']) {
                     
@@ -277,10 +277,10 @@ pipeline {
 					
 					//sh "ssh  ubuntu@${IP_DEPLOY}  docker run -d -p 5000:5000 ${registry}:${BUILD_NUMBER}"
 					//sh "ssh  ubuntu@${IP_DEPLOY}  docker run --rm -it --network=host -p 5000:5000 ${registry}:${BUILD_NUMBER}"
-					sh "ssh  ubuntu@${IP_DEPLOY}  docker run --rm  --network=host -d -p 5000:5000 ${registry}:${BUILD_NUMBER}"
+					sh "ssh  ubuntu@${IP_DEPLOY}  docker run --rm  --network=bridge -d -p 5000:5000 ${registry}:${BUILD_NUMBER}"
                 }
             }
-        }
+        }*/
     
 
 	   /* stage("Approve stop application and cleanup prod") {

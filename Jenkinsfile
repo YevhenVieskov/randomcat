@@ -276,8 +276,9 @@ pipeline {
                     sh "ssh -v ubuntu@${IP_DEPLOY}"
 					sh "ssh ubuntu@${IP_DEPLOY} docker stop \$(docker ps -a -q) 2> /dev/null || true"
 					sh "ssh ubuntu@${IP_DEPLOY} yes | docker system prune -f 2> /dev/null || true"
-					//sh "ssh  ubuntu@${IP_DEPLOY}  docker run -d -p 5000:5000 ${registry}:${BUILD_NUMBER}"
-					sh "ssh  ubuntu@${IP_DEPLOY}  docker run --rm -it --network=host -p 5000:5000 ${registry}:${BUILD_NUMBER}"
+					sh "ssh  ubuntu@${IP_DEPLOY}  docker run -d -p 5000:5000 ${registry}:${BUILD_NUMBER}"
+					//sh "ssh  ubuntu@${IP_DEPLOY}  docker run --rm -it --network=host -p 5000:5000 ${registry}:${BUILD_NUMBER}"
+					//sh "ssh  ubuntu@${IP_DEPLOY}  docker run --rm -it --network=host -d -p 5000:5000 ${registry}:${BUILD_NUMBER}"
                 }
             }
         }

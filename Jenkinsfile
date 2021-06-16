@@ -11,7 +11,7 @@ def PATH_KEY ="/home/ubuntu/.ssh/vieskovtf.pem"
 /*def remote = [name:"ubuntu", host: "52.14.77.84", user: "ubuntu", identityFile: "vieskovtf.pem", allowAnyHosts: "true" ]*/
 
 pipeline {
-    agent any
+    agent { label "Slave1" }   //any
 
     options {
         disableConcurrentBuilds()

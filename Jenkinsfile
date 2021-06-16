@@ -299,5 +299,5 @@ def deploy(environment) {
  
         sh "docker ps -f name=${containerName} -q | xargs --no-run-if-empty docker stop"
         sh "docker ps -a -f name=${containerName} -q | xargs --no-run-if-empty docker rm"
-        sh "docker run -d -p ${port}:5000 --name ${containerName} mydocker.repo.servername/myapp:${BUILD_NUMBER}"
+        sh "docker run -d -p ${port}:5000 --name ${containerName} ${registry}:${BUILD_NUMBER}"
 }

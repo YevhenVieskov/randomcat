@@ -98,6 +98,53 @@ pipeline {
 			}
 		}
 
+		//Deploying the application from the Docker image on the Dev server 
+		stage("Deploy - Dev") {
+            steps { deploy('dev') }
+		}
+
+		//a) checking if there is already a running container with the specified name and stopping such a container, if it exists
+        //b) deleting the container stopped at the previous step
+        //c) launching a container based on the image collected in step stage("Build")
+
+        //The name of the container and the port number that is exposed outside (opens for listening on the docker host) depends on the environment
+        //Environment: container name, port 
+
+		//Dev: app_dev, 8085
+        //Stage:  app_stage, 8086
+        //Prod: app_prod, 8087
+
+		
+		//Running UAT Test on Dev Server 		
+		stage("Test - UAT Dev") {
+            steps { runUAT(8888) }
+		}
+
+		//The script sh В«tests / runUAT.sh is launched with the positional parameter $ {port}, where instead of
+        //the port number is substituted with the port number according to the environment
+
+        
+		//Deploying the application from the Docker image built in step stage("Build") on the Stage server
+		//(similar to how it was done in step  	stage("Deploy - Dev")
+
+	
+        //Deploying the application from the Docker image built in step stage("Build") on the Stage
+		// server (similar to how it was done in step stage("Deploy - Dev"))
+		stage("Deploy - Stage") {
+            steps { deploy('stage') }
+		}
+
+
+        //Running a UAT test on a Stage server (similar to how it was done in step stage("Test - UAT Dev")) 
+		stage("Test - UAT Stage") {
+            steps { runUAT(88) }
+		}
+
+        //Manual confirmation of application deployment on the Prod server 
+        stage("Approve") {
+            steps { approve('Do you want to deploy to production?') }
+		}
+
 		stage("Clean up  Jenkins server")
 		{
 			steps{
@@ -232,4 +279,31 @@ def runUnittests() {
 def runUAT(port) {
 	sh "chmod +x -R ${env.WORKSPACE}"
 	sh "./tests/runUAT.sh ${port}"
+}
+
+def deploy(environment) {
+ 
+        def containerName = ''
+        def port = ''
+ 
+        if ("${environment}" == 'dev') {
+                containerName = "app_dev"
+                port = "8085"
+        }
+        
+        else if ("${environment}" == 'stage') {
+                containerName = "app_stage"
+                port = "8086"
+        }
+        
+        
+        
+        else {
+                println "Environment not valid"
+                System.exit(0)
+        }
+ 
+        sh "docker ps -f name=${containerName} -q | xargs --no-run-if-empty docker stop"
+        sh "docker ps -a -f name=${containerName} -q | xargs --no-run-if-empty docker rm"
+        sh "docker run -d -p ${port}:5000 --name ${containerName} mydocker.repo.servername/myapp:${BUILD_NUMBER}"
 }

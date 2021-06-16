@@ -282,12 +282,12 @@ def deploy(environment) {
  
         if ("${environment}" == 'dev') {
                 containerName = "app_dev"
-                port = "8085"
+                port = "80" //8085
         }
         
         else if ("${environment}" == 'stage') {
                 containerName = "app_stage"
-                port = "8086"
+                port = "80" //8086
         }
         
         

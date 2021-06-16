@@ -110,14 +110,14 @@ pipeline {
         //The name of the container and the port number that is exposed outside (opens for listening on the docker host) depends on the environment
         //Environment: container name, port 
 
-		//Dev: app_dev, 8085
-        //Stage:  app_stage, 8086
-        //Prod: app_prod, 8087
+		//Dev: app_dev, 80         85
+        //Stage:  app_stage, 80    86
+        //Prod: app_prod, 80       87
 
 		
 		//Running UAT Test on Dev Server 		
 		stage("Test - UAT Dev") {
-            steps { runUAT(8888) }
+            steps { runUAT(80) }
 		}
 
 		//The script sh В«tests / runUAT.sh is launched with the positional parameter $ {port}, where instead of
@@ -137,7 +137,7 @@ pipeline {
 
         //Running a UAT test on a Stage server (similar to how it was done in step stage("Test - UAT Dev")) 
 		stage("Test - UAT Stage") {
-            steps { runUAT(88) }
+            steps { runUAT(80) }
 		}
 
         //Manual confirmation of application deployment on the Prod server 

@@ -177,13 +177,7 @@ pipeline {
 			
 		}
 
-       
-		
-        stage("Approve") {
-            steps { approve('Do you want to deploy to production?') }
-		}
-
-		
+       		
 		//Clean old docker images on production server		
 		stage("Clean up  production server")
 		{

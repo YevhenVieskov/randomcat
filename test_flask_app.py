@@ -24,6 +24,6 @@ class BasicTests(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
  
 if __name__ == "__main__":
-    #unittest.main()
-    import xmlrunner
-    unittest.main(testRunner=xmlrunner.XMLTestRunner(output='test-reports'))
+    unittest.main()
+    #import xmlrunner
+    #unittest.main(testRunner=xmlrunner.XMLTestRunner(output='test-reports'))

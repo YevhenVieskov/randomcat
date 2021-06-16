@@ -99,46 +99,17 @@ pipeline {
 		}
 
 		//Deploying the application from the Docker image on the Dev server 
-		stage("Deploy - Dev") {
+		stage("Run - Dev") {
             steps { deploy('dev') }
 		}
 
-		//a) checking if there is already a running container with the specified name and stopping such a container, if it exists
-        //b) deleting the container stopped at the previous step
-        //c) launching a container based on the image collected in step stage("Build")
-
-        //The name of the container and the port number that is exposed outside (opens for listening on the docker host) depends on the environment
-        //Environment: container name, port 
-
-		//Dev: app_dev, 80         85
-        //Stage:  app_stage, 80    86
-        //Prod: app_prod, 80       87
-
-		
-		//Running UAT Test on Dev Server 		
+			
+			
 		stage("Test - UAT Dev") {
             steps { runUAT(80) }
 		}
 
-		//The script sh В«tests / runUAT.sh is launched with the positional parameter $ {port}, where instead of
-        //the port number is substituted with the port number according to the environment
-
-        
-		//Deploying the application from the Docker image built in step stage("Build") on the Stage server
-		//(similar to how it was done in step  	stage("Deploy - Dev")
-
-	
-        //Deploying the application from the Docker image built in step stage("Build") on the Stage
-		// server (similar to how it was done in step stage("Deploy - Dev"))
-		stage("Deploy - Stage") {
-            steps { deploy('stage') }
-		}
-
-
-        //Running a UAT test on a Stage server (similar to how it was done in step stage("Test - UAT Dev")) 
-		stage("Test - UAT Stage") {
-            steps { runUAT(80) }
-		}
+				
 
         //Manual confirmation of application deployment on the Prod server 
         stage("Approve") {
@@ -283,12 +254,7 @@ def deploy(environment) {
         if ("${environment}" == 'dev') {
                 containerName = "app_dev"
                 port = "80" //8085
-        }
-        
-        else if ("${environment}" == 'stage') {
-                containerName = "app_stage"
-                port = "80" //8086
-        }
+        }         
         
         
         

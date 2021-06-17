@@ -5,7 +5,7 @@ app = Flask(__name__)
 
 # list of cat images
 images = [
-"https://img.buzzfeed.com/buzzfeed-static/static/2017-08/9/17/asset/buzzfeed-prod-web-13/anigif_sub-buzz-11282-1502314385-1.gif",
+
 "https://img.buzzfeed.com/buzzfeed-static/static/2017-08/9/17/asset/buzzfeed-prod-web-10/anigif_sub-buzz-8427-1502313524-1.gif",
 "https://img.buzzfeed.com/buzzfeed-static/static/2017-08/9/17/asset/buzzfeed-prod-web-02/anigif_sub-buzz-22626-1502313674-1.gif",
 "https://img.buzzfeed.com/buzzfeed-static/static/2017-08/9/17/asset/buzzfeed-prod-web-02/anigif_sub-buzz-22707-1502313740-1.gif",

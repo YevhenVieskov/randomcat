@@ -26,8 +26,6 @@ pipeline {
 
 	}
 
-	
-
     stages {
 
 		//Download code from the repository
@@ -46,12 +44,7 @@ pipeline {
 						    sh "python -m pip install --user --no-cache-dir -r requirements.txt "
 						}
 					}
-
-					/*post {
-                        cleanup {
-                            cleanWs()
-                        }
-                    }*/
+					
 				}
 
 				stage("Perform Unit Tests") {
